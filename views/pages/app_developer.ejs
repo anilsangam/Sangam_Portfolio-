@@ -67,11 +67,12 @@
                                         <i class="phone__btn r" style="top:28%;height:11%"></i>
                                         <div class="phone__screen">
                                             <% if (p.video) { %>
-                                                <video muted loop playsinline preload="metadata" poster="<%= p.poster ? (p.poster.startsWith('/') ? p.poster : '/images/' + p.poster) : '/images/app-expense.webp' %>" width="393" height="852">
-                                                    <source src="<%= p.video.startsWith('/') ? p.video : '/images/' + p.video %>" type="video/mp4">
+                                                <video muted loop playsinline preload="metadata" poster="<%= p.poster ? ((p.poster.startsWith('/') || p.poster.startsWith('http')) ? p.poster : '/images/' + p.poster) : '/images/app-expense.webp' %>" width="393" height="852">
+                                                    <source src="<%= (p.video.startsWith('/') || p.video.startsWith('http')) ? p.video : '/images/' + p.video %>" type="video/mp4">
                                                 </video>
                                             <% } else if (p.poster || p.shot) { %>
-                                                <img class="page" src="<%= (p.poster || p.shot).startsWith('/') ? (p.poster || p.shot) : '/images/' + (p.poster || p.shot) %>" alt="" width="393" height="852" loading="<%= i < 1 ? 'eager' : 'lazy' %>">
+                                                <% const appImg = p.poster || p.shot; %>
+                                                <img class="page" src="<%= (appImg.startsWith('/') || appImg.startsWith('http')) ? appImg : '/images/' + appImg %>" alt="<%= p.title %>" width="393" height="852" loading="<%= i < 1 ? 'eager' : 'lazy' %>">
                                             <% } else { %>
                                                 <img class="page" src="/images/app-expense.webp" alt="" width="393" height="852" loading="<%= i < 1 ? 'eager' : 'lazy' %>">
                                             <% } %>

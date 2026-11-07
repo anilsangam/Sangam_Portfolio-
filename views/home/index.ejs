@@ -52,7 +52,7 @@
             <div class="shell hero__content">
                 <div class="hero__left">
                     <h1 class="h1">
-                        <span class="sr-only"><%= (profile && profile.headline) || '' %></span>
+                        <span class="sr-only"><%- (profile && profile.headline) || '' %></span>
                         <span aria-hidden="true">
                             <% if (firstName) { %>
                             <span class="line only-desktop">
@@ -1185,13 +1185,13 @@
                 let offset;
                 // anchor distance from the viewport's right edge
                 if (vw >= 1024) {
-                    offset = 4.25 * rem;
+                    offset = 3.1 * rem + 60;
                     L = Math.min(270, Math.max(190, vh * .3));
                     EXT_MAX = 72;
                     thick = 3.7;
                     knobS = 1.35;
                 } else if (vw >= 640) {
-                    offset = 5.9 * rem;
+                    offset = 4.5 * rem;
                     L = Math.min(220, Math.max(160, vh * .2));
                     EXT_MAX = 62;
                     thick = 3.4;
@@ -1210,12 +1210,6 @@
                 dpr = Math.min(devicePixelRatio || 1, 2);
                 cv.width = Math.round(W * dpr);
                 cv.height = Math.round(H * dpr);
-                // small screens: hang just left of the local-time badge
-                const ck = document.querySelector('.hdr .clock');
-                if (ck && ck.offsetWidth) {
-                    // desktop: hang right beside the local-time badge; small screens: near the right edge (over the badge is fine)
-                    offset = vw >= 1200 ? Math.max(1.2 * rem, vw - ck.getBoundingClientRect().right - 1.4 * rem) : 2.4 * rem;
-                }
                 const newAx = W - offset;
                 const total = L + HIDDEN;
                 seg = total / N;

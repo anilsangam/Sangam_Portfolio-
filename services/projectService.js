@@ -102,6 +102,7 @@ class ProjectService {
           back: undefined,
           spine: undefined
         },
+        desktopImage: p.desktopImage ? ((p.desktopImage.startsWith('/') || p.desktopImage.startsWith('http')) ? p.desktopImage : '/images/' + p.desktopImage) : null,
         mobileScreenshot: mobileShot,
         icon: iconImg,
         edge: pal.edge,

@@ -7,16 +7,17 @@ async function connectDB() {
 
   try {
     const conn = await mongoose.connect(uri, {
-      serverSelectionTimeoutMS: 2000
+      serverSelectionTimeoutMS: 15000
     });
     isConnected = true;
+    console.log('[Database] Connected to MongoDB successfully.');
     return conn;
   } catch (err) {
     isConnected = false;
     if (process.env.NODE_ENV === 'production') {
       throw err;
     }
-    console.warn('\n[Notice] MongoDB is not running locally. Database features will be simulated with default portfolio data.\n');
+    console.warn('\n[Notice] MongoDB connection issue: ' + err.message);
   }
 }
 

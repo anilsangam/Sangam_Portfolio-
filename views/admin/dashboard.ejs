@@ -58,7 +58,9 @@
             </div>
 
             <% if (typeof msg !== 'undefined' && msg) { %>
-                <div class="alert alert-success"><%= msg %></div>
+                <div class="alert <%= (msg.toLowerCase().includes('fail') || msg.toLowerCase().includes('error')) ? 'alert-danger' : 'alert-success' %>" style="<%= (msg.toLowerCase().includes('fail') || msg.toLowerCase().includes('error')) ? 'background:rgba(239,68,68,0.15); border:1px solid rgba(239,68,68,0.4); color:#fca5a5;' : 'background:rgba(34,197,94,0.15); border:1px solid rgba(34,197,94,0.4); color:#86efac;' %> padding:12px 18px; border-radius:10px; margin-bottom:20px; font-weight:500;">
+                    <%= msg %>
+                </div>
             <% } %>
 
             <!-- Overview Section -->
@@ -94,6 +96,7 @@
                     <table>
                         <thead>
                             <tr>
+                                <th>Cover</th>
                                 <th>Category</th>
                                 <th>Title</th>
                                 <th>Sub-Title / Kind</th>
@@ -106,6 +109,19 @@
                             <% if (projects && projects.length > 0) { %>
                                 <% projects.forEach(p => { %>
                                     <tr>
+                                        <td>
+                                            <% const thumb = p.desktopImage || p.poster || p.shot; %>
+                                            <% if (thumb) { %>
+                                                <div style="display:flex; align-items:center; gap:6px;">
+                                                    <img src="<%= thumb.startsWith('http') || thumb.startsWith('/') ? thumb : '/images/' + thumb %>" alt="<%= p.title %>" style="width:40px; height:50px; object-fit:cover; border-radius:4px; border:1px solid #334155;">
+                                                    <% if (thumb.includes('cloudinary.com')) { %>
+                                                        <span title="Hosted on Cloudinary" style="font-size:10px; color:#38bdf8; background:rgba(56,189,248,0.1); padding:2px 5px; border-radius:4px; border:1px solid rgba(56,189,248,0.25);">Cloud</span>
+                                                    <% } %>
+                                                </div>
+                                            <% } else { %>
+                                                <span style="color:var(--text-muted); font-size:12px;">No image</span>
+                                            <% } %>
+                                        </td>
                                         <td>
                                             <span class="badge <%= p.category === 'web' ? 'badge-web' : 'badge-app' %>">
                                                 <%= p.category.toUpperCase() %>
@@ -135,8 +151,9 @@
                                                             <div class="form-group"><label>Live URL</label><input type="url" name="url" value="<%= p.url || '' %>"></div>
                                                             <div class="form-group"><label>Display order</label><input type="number" name="order" value="<%= p.order || 0 %>"></div>
                                                             <div class="form-group"><label>Visibility</label><select name="isPublished"><option value="true" <%= p.isPublished ? 'selected' : '' %>>Published</option><option value="false" <%= !p.isPublished ? 'selected' : '' %>>Draft</option></select></div>
-                                                            <div class="form-group"><label>Book cover image</label><% if (p.poster) { %><img src="<%= p.poster.startsWith('/') || p.poster.startsWith('http') ? p.poster : '/images/' + p.poster %>" alt="Current <%= p.title %> cover" style="display:block;width:72px;height:88px;object-fit:cover;border-radius:6px;margin-bottom:8px;"><% } %><input type="file" name="coverImage" accept="image/*"><small>Shown on the book cover. Leave empty to keep current.</small></div>
-                                                            <div class="form-group"><label>Inside book image</label><% if (p.shot || p.poster) { const pageImage = p.shot || p.poster; %><img src="<%= pageImage.startsWith('/') || pageImage.startsWith('http') ? pageImage : '/images/' + pageImage %>" alt="Current <%= p.title %> page image" style="display:block;width:72px;height:88px;object-fit:cover;border-radius:6px;margin-bottom:8px;"><% } %><input type="file" name="screenshotImage" accept="image/*"><small>Use a full-page site capture for web projects or an app screenshot for app projects.</small></div>
+                                                            <div class="form-group"><label>Book cover image (Portrait)</label><% if (p.poster) { %><img src="<%= p.poster.startsWith('/') || p.poster.startsWith('http') ? p.poster : '/images/' + p.poster %>" alt="Current <%= p.title %> cover" style="display:block;width:72px;height:88px;object-fit:cover;border-radius:6px;margin-bottom:8px;"><% } %><input type="file" name="coverImage" accept="image/*"><small>Shown on the 3D book cover. Leave empty to keep current.</small></div>
+                                                            <div class="form-group"><label>Desktop size image (16:9 Landscape)</label><% if (p.desktopImage) { %><img src="<%= p.desktopImage.startsWith('/') || p.desktopImage.startsWith('http') ? p.desktopImage : '/images/' + p.desktopImage %>" alt="Current <%= p.title %> desktop screen" style="display:block;width:120px;height:72px;object-fit:cover;border-radius:6px;margin-bottom:8px;"><% } %><input type="file" name="desktopImage" accept="image/*"><small>Desktop monitor mockup screenshot for Web Developer page. Leave empty to keep current.</small></div>
+                                                            <div class="form-group"><label>Inside book image / Screenshot</label><% if (p.shot || p.poster) { const pageImage = p.shot || p.poster; %><img src="<%= pageImage.startsWith('/') || pageImage.startsWith('http') ? pageImage : '/images/' + pageImage %>" alt="Current <%= p.title %> page image" style="display:block;width:72px;height:88px;object-fit:cover;border-radius:6px;margin-bottom:8px;"><% } %><input type="file" name="screenshotImage" accept="image/*"><small>Shown inside 3D book or mobile phone view.</small></div>
                                                         </div>
                                                         <button class="btn" type="submit" style="margin-top:14px;">Save Project</button>
                                                     </form>
@@ -150,7 +167,7 @@
                                 <% }) %>
                             <% } else { %>
                                 <tr>
-                                    <td colspan="6" style="text-align: center; color: var(--text-muted);">No projects found. Add your first project below.</td>
+                                    <td colspan="7" style="text-align: center; color: var(--text-muted);">No projects found. Add your first project below.</td>
                                 </tr>
                             <% } %>
                         </tbody>
@@ -198,13 +215,19 @@
                                 <input type="number" id="p-order" name="order" value="<%= projects.length + 1 %>">
                             </div>
                             <div class="form-group">
-                                <label for="p-cover">Book cover image</label>
+                                <label for="p-cover">Book cover image (Portrait)</label>
                                 <input type="file" id="p-cover" name="coverImage" accept="image/*">
+                                <small>Shown on 3D book front cover.</small>
                             </div>
                             <div class="form-group">
-                                <label for="p-page-image">Inside book image</label>
+                                <label for="p-desktop-image">Desktop size image (16:9 Landscape)</label>
+                                <input type="file" id="p-desktop-image" name="desktopImage" accept="image/*">
+                                <small>Desktop monitor mockup screenshot for Web Developer page.</small>
+                            </div>
+                            <div class="form-group">
+                                <label for="p-page-image">Inside book image / Screenshot</label>
                                 <input type="file" id="p-page-image" name="screenshotImage" accept="image/*">
-                                <small>Use a full-page site capture for web projects or an app screenshot for app projects.</small>
+                                <small>Shown inside 3D book or mobile screen view.</small>
                             </div>
                         </div>
                         <button type="submit" class="btn" style="margin-top: 12px;">+ Create Project</button>

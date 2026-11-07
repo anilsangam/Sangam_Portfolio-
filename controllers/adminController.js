@@ -133,17 +133,17 @@ exports.postUpdateProfile = async (req, res) => {
     const baseImage = req.files?.heroImage?.[0] || req.file;
     const colorImage = req.files?.heroImageColor?.[0];
     if (baseImage) {
-      const cloudUrl = await uploadToCloudinaryIfAvailable(baseImage.path);
-      updateData.heroImage = cloudUrl || ('/images/' + baseImage.filename);
+      const cloudUrl = await uploadToCloudinaryIfAvailable(baseImage);
+      if (cloudUrl) updateData.heroImage = cloudUrl;
     }
     if (colorImage) {
-      const cloudUrl = await uploadToCloudinaryIfAvailable(colorImage.path);
-      updateData.heroImageColor = cloudUrl || ('/images/' + colorImage.filename);
+      const cloudUrl = await uploadToCloudinaryIfAvailable(colorImage);
+      if (cloudUrl) updateData.heroImageColor = cloudUrl;
     }
     const resumeFile = req.files?.resume?.[0];
     if (resumeFile) {
-      const cloudUrl = await uploadToCloudinaryIfAvailable(resumeFile.path);
-      updateData.resumeUrl = cloudUrl || ('/images/' + resumeFile.filename);
+      const cloudUrl = await uploadToCloudinaryIfAvailable(resumeFile);
+      if (cloudUrl) updateData.resumeUrl = cloudUrl;
     }
 
     await Profile.findOneAndUpdate(
@@ -172,15 +172,18 @@ exports.postCreateProject = async (req, res) => {
 
     const coverFile = req.files?.coverImage?.[0] || req.files?.media?.[0];
     const screenshotFile = req.files?.screenshotImage?.[0];
+    const desktopFile = req.files?.desktopImage?.[0];
     let coverFilename = '';
     let screenshotFilename = '';
+    let desktopFilename = '';
     if (coverFile) {
-      const cloudUrl = await uploadToCloudinaryIfAvailable(coverFile.path);
-      coverFilename = cloudUrl || ('/images/' + coverFile.filename);
+      coverFilename = await uploadToCloudinaryIfAvailable(coverFile) || '';
     }
     if (screenshotFile) {
-      const cloudUrl = await uploadToCloudinaryIfAvailable(screenshotFile.path);
-      screenshotFilename = cloudUrl || ('/images/' + screenshotFile.filename);
+      screenshotFilename = await uploadToCloudinaryIfAvailable(screenshotFile) || '';
+    }
+    if (desktopFile) {
+      desktopFilename = await uploadToCloudinaryIfAvailable(desktopFile) || '';
     }
 
     await Project.create({
@@ -197,6 +200,7 @@ exports.postCreateProject = async (req, res) => {
       ar: ar || '16 / 9',
       poster: coverFilename || req.body.poster || '',
       shot: screenshotFilename || coverFilename || req.body.shot || '',
+      desktopImage: desktopFilename || req.body.desktopImage || '',
       video: req.body.video || '',
       icon: req.body.icon || '',
       isPublished: true
@@ -231,13 +235,18 @@ exports.postUpdateProject = async (req, res) => {
 
     const coverImage = req.files?.coverImage?.[0];
     const screenshotImage = req.files?.screenshotImage?.[0];
+    const desktopImage = req.files?.desktopImage?.[0];
     if (coverImage) {
-      const cloudUrl = await uploadToCloudinaryIfAvailable(coverImage.path);
-      updateData.poster = cloudUrl || ('/images/' + coverImage.filename);
+      const cloudUrl = await uploadToCloudinaryIfAvailable(coverImage);
+      if (cloudUrl) updateData.poster = cloudUrl;
     }
     if (screenshotImage) {
-      const cloudUrl = await uploadToCloudinaryIfAvailable(screenshotImage.path);
-      updateData.shot = cloudUrl || ('/images/' + screenshotImage.filename);
+      const cloudUrl = await uploadToCloudinaryIfAvailable(screenshotImage);
+      if (cloudUrl) updateData.shot = cloudUrl;
+    }
+    if (desktopImage) {
+      const cloudUrl = await uploadToCloudinaryIfAvailable(desktopImage);
+      if (cloudUrl) updateData.desktopImage = cloudUrl;
     }
 
     await Project.findByIdAndUpdate(id, updateData);

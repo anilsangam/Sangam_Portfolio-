@@ -60,7 +60,7 @@ async function testTemplates() {
     assert('Home HTML does NOT contain Photographer door', !homeHtml.includes('Photographer'));
     assert('Home HTML does NOT contain holoOpen button', !homeHtml.includes('id="holoOpen"'));
     assert('Home HTML does NOT contain holo dialog', !homeHtml.includes('id="holo"'));
-    assert('Home HTML contains clean clock widget matching portfolio/home.html', homeHtml.includes('class="chip clock"'));
+    assert('Home HTML navbar does NOT contain clock widget', !homeHtml.includes('class="chip clock"'));
     assert('Home HTML navbar does NOT contain Works link', !homeHtml.includes('>Works<'));
     assert('Home HTML does NOT contain UI/UX door', !homeHtml.includes('aria-label="Open the UI/UX Designer door"'));
     assert('Home HTML does NOT contain Graphic Designer door', !homeHtml.includes('aria-label="Open the Graphic Designer door"'));

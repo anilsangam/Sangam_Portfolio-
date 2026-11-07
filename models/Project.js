@@ -39,6 +39,10 @@ const projectSchema = new mongoose.Schema({
     type: String,
     trim: true
   },
+  desktopImage: {
+    type: String,
+    trim: true
+  },
   icon: {
     type: String,
     trim: true

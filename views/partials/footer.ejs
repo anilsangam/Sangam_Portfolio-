@@ -1,16 +1,16 @@
-﻿<footer class="sf" id="contact-footer" aria-labelledby="sfTitle">
-    <% const footerWhatsapp = '916207314168'; %>
+<footer class="sf" id="contact-footer" aria-labelledby="sfTitle">
+    <% const footerWhatsapp = (profile && profile.whatsappNumber) ? profile.whatsappNumber.replace(/[^\d]/g, '') : '916207314168'; %>
     <div class="sf__in sf__compact">
         <div class="sf__top">
             <div class="sf__intro">
-                <p class="sf__eye"><i></i><%= (profile && profile.availabilityStatus) || '' %></p>
+                <p class="sf__eye"><i></i><%= (profile && profile.availabilityStatus) || 'Available for freelance projects' %></p>
                 <h2 class="sf__h" id="sfTitle">Want to build your project?<span>Let's make it happen.</span></h2>
-                <p class="sf__p"><%= (profile && profile.subheadline) || '' %></p>
+                <p class="sf__p"><%= (profile && profile.subheadline) || 'Building modern web and mobile applications using React, React Native, Node.js, Express.js and MongoDB.' %></p>
             </div>
-        <div class="sf__cta">
-            <button class="sf__btn" data-contact>Let's discuss<b><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></b></button>
-            <a href="https://wa.me/<%= footerWhatsapp %>" class="sf__ghost sf__whatsapp" target="_blank" rel="noopener noreferrer" aria-label="Contact on WhatsApp"><svg viewBox="0 0 32 32" aria-hidden="true"><path d="M16.02 3.2A12.7 12.7 0 0 0 5.1 22.37L3.4 28.6l6.38-1.67A12.72 12.72 0 1 0 16.02 3.2Zm0 23.1c-1.96 0-3.88-.53-5.56-1.54l-.4-.24-3.78.99 1.01-3.68-.26-.42a10.35 10.35 0 1 1 8.99 4.9Zm5.68-7.75c-.31-.16-1.84-.91-2.12-1.01-.28-.1-.49-.16-.69.16-.2.31-.8 1.01-.98 1.22-.18.2-.36.23-.67.08-.31-.16-1.31-.49-2.5-1.55-.92-.82-1.55-1.84-1.73-2.15-.18-.31-.02-.48.14-.63.14-.14.31-.36.47-.54.16-.18.21-.31.31-.52.1-.2.05-.39-.02-.54-.08-.16-.69-1.67-.95-2.29-.25-.6-.5-.52-.69-.53h-.59c-.2 0-.52.08-.8.39-.28.31-1.05 1.03-1.05 2.5s1.08 2.91 1.23 3.11c.16.21 2.13 3.25 5.15 4.56.72.31 1.28.5 1.72.64.72.23 1.37.2 1.89.12.58-.09 1.84-.75 2.1-1.47.26-.72.26-1.34.18-1.47-.08-.13-.28-.21-.59-.36Z"/></svg><span>WhatsApp</span></a>
-        </div>
+            <div class="sf__cta">
+                <button class="sf__btn" data-contact type="button">Let's discuss<b><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></b></button>
+                <a href="https://wa.me/<%= footerWhatsapp %>" class="sf__ghost sf__whatsapp" target="_blank" rel="noopener noreferrer" aria-label="Contact on WhatsApp"><svg viewBox="0 0 32 32" aria-hidden="true"><path d="M16.02 3.2A12.7 12.7 0 0 0 5.1 22.37L3.4 28.6l6.38-1.67A12.72 12.72 0 1 0 16.02 3.2Zm0 23.1c-1.96 0-3.88-.53-5.56-1.54l-.4-.24-3.78.99 1.01-3.68-.26-.42a10.35 10.35 0 1 1 8.99 4.9Zm5.68-7.75c-.31-.16-1.84-.91-2.12-1.01-.28-.1-.49-.16-.69.16-.2.31-.8 1.01-.98 1.22-.18.2-.36.23-.67.08-.31-.16-1.31-.49-2.5-1.55-.92-.82-1.55-1.84-1.73-2.15-.18-.31-.02-.48.14-.63.14-.14.31-.36.47-.54.16-.18.21-.31.31-.52.1-.2.05-.39-.02-.54-.08-.16-.69-1.67-.95-2.29-.25-.6-.5-.52-.69-.53h-.59c-.2 0-.52.08-.8.39-.28.31-1.05 1.03-1.05 2.5s1.08 2.91 1.23 3.11c.16.21 2.13 3.25 5.15 4.56.72.31 1.28.5 1.72.64.72.23 1.37.2 1.89.12.58-.09 1.84-.75 2.1-1.47.26-.72.26-1.34.18-1.47-.08-.13-.28-.21-.59-.36Z"/></svg><span>WhatsApp</span></a>
+            </div>
         </div>
 
         <div class="sf__footer-row">
@@ -18,12 +18,9 @@
                 <h3>Quick nav</h3>
                 <nav class="sf__footer-nav" aria-label="Footer navigation">
                     <a href="/">Home</a>
-                    <a href="/#projectsShowcase">Selected work</a>
-                    <a href="/web-developer">Web</a>
-                    <a href="/app-developer">Apps</a>
-                    <a href="/#about">My story</a>
-                    <a href="/#skills">Tech stack</a>
-                    <a href="/#contact-footer">Contact</a>
+                    <a href="/web-developer">Web Development</a>
+                    <a href="/app-developer">App Development</a>
+                    <a href="/about">My story</a>
                 </nav>
             </div>
             <div class="sf__connect">
@@ -46,4 +43,283 @@
 
         <div class="sf__bot"><span>&copy; <span data-fyear><%= new Date().getFullYear() %></span> <%= (profile && profile.fullName) || "Anil Sangam" %>. All rights reserved.</span></div>
     </div>
+
+    <style>
+    /* ==========================================================
+       Compact Professional Footer Styles (Self-contained)
+       ========================================================== */
+    .sfw {
+        position: relative;
+        z-index: 2;
+        background: transparent;
+        margin-top: 0;
+    }
+    .sf {
+        --sf-bg: #1A1818;
+        --sf-fg: #E8E4E0;
+        --sf-rgb: 232, 228, 224;
+        --sf-acc: #C4B0B0;
+        position: relative;
+        z-index: 2;
+        background: var(--sf-bg);
+        color: var(--sf-fg);
+        border-radius: 2rem 2rem 0 0;
+        overflow: hidden;
+        font-family: 'Onest', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+    }
+    html[data-mode="dark"] .sf {
+        --sf-bg: #0F0E0E;
+        box-shadow: inset 0 1px 0 rgba(232, 228, 224, .1);
+    }
+    .sf__in.sf__compact {
+        max-width: 88rem;
+        margin: 0 auto;
+        padding: 3.5rem clamp(1.25rem, 5vw, 5.5rem) 1.5rem;
+        box-sizing: border-box;
+    }
+    .sf__top {
+        display: flex;
+        flex-direction: column;
+        gap: 1.5rem;
+    }
+    .sf__eye {
+        display: inline-flex;
+        align-items: center;
+        gap: .5rem;
+        margin: 0 0 .6rem;
+        font-size: .75rem;
+        color: rgba(var(--sf-rgb), .6);
+        letter-spacing: .08em;
+        text-transform: uppercase;
+        font-weight: 600;
+    }
+    .sf__eye i {
+        display: inline-block;
+        width: .5rem;
+        height: .5rem;
+        border-radius: 50%;
+        background: #22c55e;
+        box-shadow: 0 0 8px rgba(34, 197, 94, .6);
+    }
+    .sf__h {
+        max-width: 48rem;
+        margin: 0;
+        font-size: clamp(2rem, 4.5vw, 3.8rem);
+        line-height: 1.08;
+        letter-spacing: -.03em;
+        font-weight: 700;
+        color: var(--sf-fg);
+    }
+    .sf__h span {
+        display: block;
+        margin-top: .15em;
+        font-size: .78em;
+        color: rgba(var(--sf-rgb), .48);
+        font-weight: 500;
+    }
+    .sf__p {
+        max-width: 48rem;
+        margin: .85rem 0 0;
+        font-size: .95rem;
+        line-height: 1.55;
+        color: rgba(var(--sf-rgb), .7);
+    }
+    .sf__cta {
+        display: flex;
+        flex-wrap: wrap;
+        margin-top: 1.25rem;
+        gap: .8rem;
+        align-items: center;
+    }
+    .sf__btn,
+    .sf__ghost {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        height: 3.2rem;
+        padding: 0 1.4rem;
+        border-radius: 999px;
+        font-family: inherit;
+        font-size: .95rem;
+        font-weight: 600;
+        text-decoration: none;
+        cursor: pointer;
+        transition: all .25s cubic-bezier(.16, 1, .3, 1);
+        box-sizing: border-box;
+    }
+    .sf__btn {
+        background: var(--sf-fg);
+        color: var(--sf-bg);
+        border: none;
+        gap: .75rem;
+    }
+    .sf__btn b {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 2.15rem;
+        height: 2.15rem;
+        border-radius: 50%;
+        background: var(--sf-bg);
+        color: var(--sf-fg);
+    }
+    .sf__btn svg {
+        width: 1rem;
+        height: 1rem;
+    }
+    .sf__btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 24px rgba(0,0,0,0.25);
+    }
+    .sf__ghost.sf__whatsapp {
+        background: rgba(37, 211, 102, .12);
+        color: #25d366;
+        border: 1px solid rgba(37, 211, 102, .35);
+        gap: .65rem;
+    }
+    .sf__ghost.sf__whatsapp:hover {
+        background: rgba(37, 211, 102, .22);
+        transform: translateY(-2px);
+    }
+    .sf__whatsapp svg {
+        width: 1.5rem;
+        height: 1.5rem;
+        fill: currentColor;
+    }
+    .sf__footer-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 1.5rem;
+        margin-top: 2.2rem;
+        padding-top: 1.4rem;
+        border-top: 1px solid rgba(var(--sf-rgb), .14);
+    }
+    .sf__quick-nav h3,
+    .sf__connect h3 {
+        margin: 0 0 .75rem;
+        color: rgba(var(--sf-rgb), .48);
+        font-size: .68rem;
+        font-weight: 600;
+        letter-spacing: .12em;
+        text-transform: uppercase;
+    }
+    .sf__footer-nav,
+    .sf__socials {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        flex-wrap: wrap;
+    }
+    .sf__footer-nav a {
+        color: rgba(var(--sf-rgb), .76);
+        font-size: .84rem;
+        text-decoration: none;
+        transition: color .2s ease;
+    }
+    .sf__footer-nav a:hover {
+        color: var(--sf-fg);
+    }
+    .sf__socials {
+        gap: .5rem;
+    }
+    .sf__socials a {
+        display: grid;
+        place-items: center;
+        width: 2.4rem;
+        height: 2.4rem;
+        border: 1px solid rgba(var(--sf-rgb), .12);
+        border-radius: .65rem;
+        background: #e8e4e0;
+        color: #1a1818;
+        transition: transform .2s ease, background .2s ease, color .2s ease;
+    }
+    .sf__socials a:hover {
+        transform: translateY(-2px);
+        background: #d8d1c8;
+        color: #111;
+    }
+    .sf__socials svg {
+        display: block;
+        width: 1.15rem;
+        height: 1.15rem;
+        fill: currentColor;
+    }
+    .sf__contact-row {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: .6rem 1.4rem;
+        margin-top: 1.1rem;
+        color: rgba(var(--sf-rgb), .67);
+        font-size: .8rem;
+    }
+    .sf__contact-row a,
+    .sf__location {
+        display: inline-flex;
+        align-items: baseline;
+        gap: .4rem;
+        min-width: 0;
+        color: inherit;
+        text-decoration: none;
+    }
+    .sf__contact-row a:hover {
+        color: var(--sf-fg);
+    }
+    .sf__contact-row span {
+        color: rgba(var(--sf-rgb), .46);
+        font-size: .68rem;
+        text-transform: uppercase;
+        letter-spacing: .08em;
+    }
+    .sf__bot {
+        display: flex;
+        justify-content: flex-start;
+        margin-top: 1.2rem;
+        padding-top: 1rem;
+        border-top: 1px solid rgba(var(--sf-rgb), .1);
+        font-size: .75rem;
+        color: rgba(var(--sf-rgb), .5);
+    }
+
+    @media (min-width: 1024px) {
+        .sf__top {
+            flex-direction: row;
+            align-items: center;
+            justify-content: space-between;
+            gap: 3rem;
+        }
+        .sf__intro {
+            flex: 1 1 auto;
+            max-width: 52rem;
+            min-width: 0;
+        }
+        .sf__cta {
+            flex: 0 0 auto;
+            margin-top: 0;
+            justify-content: flex-end;
+            gap: 1rem;
+        }
+        .sf__footer-row {
+            align-items: flex-end;
+        }
+    }
+
+    @media (max-width: 767.98px) {
+        .sf__footer-row {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 1.4rem;
+        }
+        .sf__contact-row {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: .5rem;
+        }
+        .sf__socials a {
+            width: 2.2rem;
+            height: 2.2rem;
+        }
+    }
+    </style>
 </footer>

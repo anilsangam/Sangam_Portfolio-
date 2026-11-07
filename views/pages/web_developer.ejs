@@ -60,11 +60,12 @@
                                     <div class="mon__body">
                                         <div class="mon__screen<%= p.video ? ' vid' : '' %>" style="--ar:<%= p.ar || '1280 / 732' %>">
                                             <% if (p.video) { %>
-                                                <video muted loop playsinline preload="metadata" poster="<%= p.poster ? (p.poster.startsWith('/') ? p.poster : '/images/' + p.poster) : '/images/project-2.webp' %>" src="<%= p.video.startsWith('/') ? p.video : '/images/' + p.video %>" style="background:<%= p.bg || '#1A1818' %>;object-fit:contain"></video>
-                                            <% } else if (p.shot || p.poster) { %>
-                                                <img src="<%= (p.shot || p.poster).startsWith('/') ? (p.shot || p.poster) : '/images/' + (p.shot || p.poster) %>" alt="" loading="<%= i < 1 ? 'eager' : 'lazy' %>" style="background:<%= p.bg || '#1A1818' %>;object-fit:contain;width:100%;height:100%">
+                                                <video muted loop playsinline preload="metadata" poster="<%= p.poster ? ((p.poster.startsWith('/') || p.poster.startsWith('http')) ? p.poster : '/images/' + p.poster) : '/images/project-2.webp' %>" src="<%= (p.video.startsWith('/') || p.video.startsWith('http')) ? p.video : '/images/' + p.video %>" style="background:<%= p.bg || '#1A1818' %>;object-fit:cover;object-position:top;width:100%;height:100%;"></video>
+                                            <% } else if (p.desktopImage || p.shot || p.poster) { %>
+                                                <% const mediaImg = p.desktopImage || p.shot || p.poster; %>
+                                                <img class="page" src="<%= (mediaImg.startsWith('/') || mediaImg.startsWith('http')) ? mediaImg : '/images/' + mediaImg %>" alt="<%= p.title %>" loading="<%= i < 1 ? 'eager' : 'lazy' %>" style="background:<%= p.bg || '#1A1818' %>;object-fit:cover;object-position:top;width:100%;height:100%;display:block;">
                                             <% } else { %>
-                                                <img src="/images/1-zerodha.webp" alt="" loading="<%= i < 1 ? 'eager' : 'lazy' %>" style="background:<%= p.bg || '#1A1818' %>;object-fit:contain;width:100%;height:100%">
+                                                <img class="page" src="/images/1-zerodha.webp" alt="" loading="<%= i < 1 ? 'eager' : 'lazy' %>" style="background:<%= p.bg || '#1A1818' %>;object-fit:cover;object-position:top;width:100%;height:100%;display:block;">
                                             <% } %>
                                         </div>
                                     </div>

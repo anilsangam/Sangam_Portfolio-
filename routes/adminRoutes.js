@@ -33,11 +33,13 @@ router.post('/profile', requireAuth, upload.fields([
 router.post('/projects/create', requireAuth, upload.fields([
   { name: 'coverImage', maxCount: 1 },
   { name: 'screenshotImage', maxCount: 1 },
+  { name: 'desktopImage', maxCount: 1 },
   { name: 'media', maxCount: 1 }
 ]), adminController.postCreateProject);
 router.post('/projects/edit/:id', requireAuth, upload.fields([
   { name: 'coverImage', maxCount: 1 },
-  { name: 'screenshotImage', maxCount: 1 }
+  { name: 'screenshotImage', maxCount: 1 },
+  { name: 'desktopImage', maxCount: 1 }
 ]), adminController.postUpdateProject);
 router.post('/projects/delete/:id', requireAuth, adminController.postDeleteProject);
 
