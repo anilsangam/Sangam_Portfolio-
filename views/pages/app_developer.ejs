@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <%- include('../partials/head', { isRoom: true }) %>
+</head>
+<body>
+    <div class="glow" aria-hidden="true"></div>
+    <%- include('../partials/header', { isRoom: true }) %>
+
+    <main class="wrap">
+        <div class="top">
+            <a class="chip" href="/">← Back to Home</a>
+        </div>
+        <section class="intro">
+            <h1>App Development</h1>
+            <div>
+                <p>Mobile applications designed and built end to end using React Native, Expo, Node.js and MongoDB: from responsive UI interactions and clean user flows to secure authentication, REST APIs, notifications and reliable performance.</p>
+            </div>
+        </section>
+
+        <!-- ============ 3D Books Showcase ============ -->
+        <section class="books-showcase-section" aria-label="3D & Mobile Apps Projects">
+            <!-- Desktop: 3D Books Showcase -->
+            <div id="appBooksShowcase" class="books-showcase-mount bs-desktop-only"></div>
+            <!-- Mobile: Scroll-Triggered Cards -->
+            <div id="appMobileCards" class="mobile-scroll-cards bs-mobile-only" aria-label="Mobile Apps Projects"></div>
+        </section>
+        <section class="stack" id="stack" aria-label="Projects">
+            <% if (projects && projects.length > 0) { %>
+                <% projects.forEach((p, i) => { %>
+                    <article class="card seen on<%= i % 2 ? ' flip' : '' %>" style="--i:<%= i %>" aria-labelledby="p<%= i %>">
+                        <div class="card__in">
+                            <div class="card__info">
+                                <div class="app">
+                                    <img src="<%= p.icon ? (p.icon.startsWith('/') ? p.icon : '/images/' + p.icon) : '/images/icon-expense.webp' %>" alt="" width="58" height="58" decoding="async" loading="<%= i < 1 ? 'eager' : 'lazy' %>">
+                                    <p class="card__meta">
+                                        <span><%= p.kind || 'Mobile Application' %></span>
+                                    </p>
+                                </div>
+                                <h2 id="p<%= i %>"><%= p.title %></h2>
+                                <p class="sub"><%= p.subTitle || '' %></p>
+                                <p class="desc"><%= p.desc || '' %></p>
+                                <% if (p.tags && p.tags.length > 0) { %>
+                                    <ul class="tags">
+                                        <% p.tags.forEach(t => { %>
+                                            <li><%= t %></li>
+                                        <% }) %>
+                                    </ul>
+                                <% } %>
+                                <% if (p.url) { %>
+                                    <a class="live" href="<%= p.url %>" target="_blank" rel="noopener noreferrer">
+                                        Visit live site 
+                                        <svg aria-hidden="true" focusable="false" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                            <path d="M7 17 17 7M8 7h9v9"/>
+                                        </svg>
+                                    </a>
+                                <% } else { %>
+                                    <span class="note"><%= p.note || 'Mobile Application Build' %></span>
+                                <% } %>
+                            </div>
+                            <div class="stage" aria-hidden="true">
+                                <div class="phone">
+                                    <div class="phone__body">
+                                        <i class="phone__btn l" style="top:19%;height:4%"></i>
+                                        <i class="phone__btn l" style="top:26%;height:7.5%"></i>
+                                        <i class="phone__btn l" style="top:35%;height:7.5%"></i>
+                                        <i class="phone__btn r" style="top:28%;height:11%"></i>
+                                        <div class="phone__screen">
+                                            <% if (p.video) { %>
+                                                <video muted loop playsinline preload="metadata" poster="<%= p.poster ? (p.poster.startsWith('/') ? p.poster : '/images/' + p.poster) : '/images/app-expense.webp' %>" width="393" height="852">
+                                                    <source src="<%= p.video.startsWith('/') ? p.video : '/images/' + p.video %>" type="video/mp4">
+                                                </video>
+                                            <% } else if (p.poster || p.shot) { %>
+                                                <img class="page" src="<%= (p.poster || p.shot).startsWith('/') ? (p.poster || p.shot) : '/images/' + (p.poster || p.shot) %>" alt="" width="393" height="852" loading="<%= i < 1 ? 'eager' : 'lazy' %>">
+                                            <% } else { %>
+                                                <img class="page" src="/images/app-expense.webp" alt="" width="393" height="852" loading="<%= i < 1 ? 'eager' : 'lazy' %>">
+                                            <% } %>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card__dim"></div>
+                    </article>
+                <% }) %>
+            <% } else { %>
+                <p style="text-align:center;padding:4rem 1rem;color:var(--fg);opacity:.7;">No app development projects published yet.</p>
+            <% } %>
+        </section>
+    </main>
+
+    <div class="sfw">
+        <%- include('../partials/footer') %>
+    </div>
+
+    <%- include('../partials/contact_modal') %>
+
+    <button class="totop" id="toTopBtn" aria-label="Back to top">
+        <svg class="ring" viewBox="0 0 52 52" aria-hidden="true">
+            <circle cx="26" cy="26" r="24"/>
+        </svg>
+        <svg class="ar" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M12 19V5M6 11l6-6 6 6"/>
+        </svg>
+        <span class="lbl">Back to top</span>
+    </button>
+
+    <script>
+        window.__live = true;
+
+        // Mobile drawer menu interactions
+        (function initMenu() {
+            const rn = document.getElementById('rn');
+            const menu = document.getElementById('rnMenu');
+            const panel = document.getElementById('rnPanel');
+            const pclose = document.getElementById('rnClose');
+            if (menu && panel && rn) {
+                const setMenu = (open) => {
+                    rn.classList.toggle('open', open);
+                    menu.setAttribute('aria-expanded', open ? 'true' : 'false');
+                    document.documentElement.classList.toggle('rn-lock', open);
+                    if (open && pclose) setTimeout(() => pclose.focus(), 60);
+                };
+                menu.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    setMenu(!rn.classList.contains('open'));
+                });
+                if (pclose) pclose.addEventListener('click', () => setMenu(false));
+                panel.addEventListener('click', (e) => {
+                    if (e.target.closest('a') || e.target.closest('button[data-contact]')) {
+                        setMenu(false);
+                    }
+                });
+                document.addEventListener('keydown', (e) => {
+                    if (e.key === 'Escape' && rn.classList.contains('open')) {
+                        setMenu(false);
+                    }
+                });
+            }
+        })();
+
+        // Card and video interactions
+        (function initCards() {
+            const cards = [...document.querySelectorAll('.card')];
+            cards.forEach(c => c.classList.add('seen', 'on'));
+
+            // Auto-play videos when they come into viewport
+            const vids = cards.map(c => c.querySelector('video')).filter(Boolean);
+            if (vids.length > 0 && 'IntersectionObserver' in window) {
+                const vObserver = new IntersectionObserver((entries) => {
+                    entries.forEach(entry => {
+                        const video = entry.target;
+                        if (entry.isIntersecting) {
+                            video.play().catch(() => {});
+                        } else {
+                            video.pause();
+                        }
+                    });
+                }, { threshold: 0.25 });
+                vids.forEach(v => vObserver.observe(v));
+            }
+        })();
+
+        // Back to top button & sticky navbar update
+        (function initScroll() {
+            const rn = document.getElementById('rn');
+            const toTop = document.getElementById('toTopBtn');
+            const onScroll = () => {
+                const y = window.scrollY || window.pageYOffset;
+                if (rn) rn.classList.toggle('stuck', y > 10);
+                if (toTop) toTop.classList.toggle('show', y > 400);
+            };
+            window.addEventListener('scroll', onScroll, { passive: true });
+            onScroll();
+
+            if (toTop) {
+                toTop.addEventListener('click', () => {
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                });
+            }
+        })();
+
+        // Contact Modal trigger
+        (function initContactModal() {
+            document.addEventListener('click', e => {
+                const btn = e.target.closest('[data-contact]');
+                if (!btn) return;
+                e.preventDefault();
+                const modal = document.getElementById('modal');
+                if (modal) modal.hidden = false;
+            });
+            const modalClose = document.getElementById('modalClose');
+            if (modalClose) {
+                modalClose.addEventListener('click', () => {
+                    const modal = document.getElementById('modal');
+                    if (modal) modal.hidden = true;
+                });
+            }
+        })();
+
+        // Press 'F' for fullscreen toggle
+        document.addEventListener('keydown', e => {
+            if ((e.key === 'f' || e.key === 'F') && !e.metaKey && !e.ctrlKey && !e.altKey) {
+                const tag = document.activeElement ? document.activeElement.tagName : '';
+                if (/^(INPUT|TEXTAREA|SELECT)$/.test(tag)) return;
+                e.preventDefault();
+                if (document.fullscreenElement) {
+                    document.exitFullscreen().catch(() => {});
+                } else {
+                    document.documentElement.requestFullscreen().catch(() => {});
+                }
+            }
+        });
+    </script>
+
+    <!-- 3D Books Showcase Data & Controller -->
+    <script id="appBooksData" type="application/json"><%- JSON.stringify((typeof booksData !== 'undefined' && booksData) ? booksData : []).replace(/</g, '\\u003c') %></script>
+    <script type="module">
+        import { initBooksShowcase } from '/js/books-showcase.js';
+        import { initMobileScrollCards } from '/js/scroll-cards.js';
+
+        (function setupShowcases() {
+            const dataEl = document.getElementById('appBooksData');
+            if (!dataEl) return;
+
+            let projects = [];
+            try {
+                projects = JSON.parse(dataEl.textContent);
+            } catch (err) {
+                console.error('Error parsing project data:', err);
+                return;
+            }
+
+            // 1. Desktop: 3D Books Showcase
+            const desktopMount = document.getElementById('appBooksShowcase');
+            if (desktopMount) {
+                try {
+                    initBooksShowcase(desktopMount, {
+                        books: projects,
+                        heroTitle: 'Apps',
+                        navTitle: 'App Showcase',
+                        showNav: true,
+                        showDetailPanel: true,
+                        showCarousel: true
+                    });
+                } catch (err) {
+                    console.error('Error mounting Desktop 3D Books Showcase:', err);
+                }
+            }
+
+            // 2. Mobile: Scroll-Triggered Cards
+            const mobileMount = document.getElementById('appMobileCards');
+            if (mobileMount) {
+                try {
+                    initMobileScrollCards(mobileMount, {
+                        projects: projects,
+                        title: 'App Showcase',
+                        subtitle: 'Scroll to explore apps projects'
+                    });
+                } catch (err) {
+                    console.error('Error mounting Mobile Scroll Cards:', err);
+                }
+            }
+        })();
+    </script>
+</body>
+</html>

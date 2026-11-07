@@ -1,0 +1,2292 @@
+<%
+    const pageProfile = profile || {};
+    const profileName = (pageProfile.fullName || '').trim();
+    const firstName = profileName.split(/\s+/)[0] || '';
+    const heroRoles = Array.isArray(pageProfile.heroSkills) ? pageProfile.heroSkills.filter(Boolean) : [];
+    const storyEntries = [
+        ...(experience || []).map(item => ({
+            year: String(item.year || item.period || '').match(/\d{4}/)?.[0] || '',
+            when: item.period || item.year || '',
+            title: item.role || '',
+            org: [item.company, item.location].filter(Boolean).join(' · '),
+            details: item.highlights?.length ? item.highlights : (item.description ? [item.description] : [])
+        })),
+        ...(education || []).map(item => ({
+            year: String(item.year || item.period || '').match(/\d{4}/)?.[0] || '',
+            when: item.period || item.year || '',
+            title: item.degree || '',
+            org: item.institution || '',
+            details: item.description ? [item.description] : []
+        }))
+    ].filter(item => item.title).sort((a, b) => Number(b.year || 0) - Number(a.year || 0));
+    const pageSkills = skills || [];
+    const skillGroups = [...new Set(pageSkills.map(item => item.category).filter(Boolean))]
+        .map(category => ({ category, items: pageSkills.filter(item => item.category === category) }));
+%>
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+    <%- include('../partials/head', { isRoom: false }) %>
+</head>
+<body class="ready" data-contact-email="<%= (profile && profile.email) || (settings && settings.contactEmail) || '' %>" data-profile-name="<%= profileName %>">
+    <script>document.documentElement.classList.add('ready');document.body.classList.add('ready');</script>
+    <a class="skip" href="#main">Skip to content</a>
+    <%- include('../partials/header', { isRoom: false }) %>
+    <!-- ============ Pull cord: light / dark switch ============ -->
+    <div class="cord" id="cord">
+        <canvas class="cord__cv" aria-hidden="true"></canvas>
+        <button class="cord__hit" id="cordHit" role="switch" aria-checked="false" aria-label="Dark mode (pull the cord)"></button>
+    </div>
+    <main id="main">
+        <!-- ============ Hero ============ -->
+        <section id="home" class="hero" aria-label="Introduction">
+            <div class="hero__vig" aria-hidden="true"></div>
+            <div class="hero__stage">
+                <div class="fig" id="fig">
+                    <img id="figBase" src="<%= (profile && profile.heroImage) ? profile.heroImage : '/uploads/anil_sangam.png' %>" alt="<%= profileName %>" decoding="async" fetchpriority="high" aria-hidden="true">
+                    <canvas class="fig__warm" id="figWarm" aria-hidden="true"></canvas>
+                    <canvas id="figCanvas" aria-hidden="true"></canvas>
+                    
+                </div>
+            </div>
+            <div class="shell hero__content">
+                <div class="hero__left">
+                    <h1 class="h1">
+                        <span class="sr-only"><%= (profile && profile.headline) || '' %></span>
+                        <span aria-hidden="true">
+                            <% if (firstName) { %>
+                            <span class="line only-desktop">
+                                <span style="--d:250ms">Hi, I'm <%= profileName %></span>
+                            </span>
+                            <span class="line only-mobile">
+                                <span class="hero__wave-greeting" style="--d:250ms"><svg class="hero__wave-hand" viewBox="0 0 48 48" aria-hidden="true" focusable="false"><path d="M14 22V11a3.5 3.5 0 0 1 7 0v9-13a3.5 3.5 0 0 1 7 0v13-11a3.5 3.5 0 0 1 7 0v13-7a3.5 3.5 0 0 1 7 0v14c0 9-5.5 15-14 15h-2c-5 0-8.5-2.2-11-6l-7-10a3.7 3.7 0 0 1 6-4l4 5"/></svg><span class="sr-only">Hi.</span></span>
+                            </span>
+                            <span class="line only-mobile">
+                                <span class="hero__name-mobile" style="--d:330ms"><span class="hero__name-prefix">I'm</span> <%= profileName %></span>
+                            </span>
+                            <% } %>
+                            <% if (heroRoles.length) { %>
+                            <span class="line only-desktop">
+                                <span class="soft" style="--d:370ms">I am a</span>
+                            </span>
+                            <span class="line only-mobile">
+                                <span class="soft" style="--d:370ms">I am a</span>
+                            </span>
+                            <span class="cal-line">
+                                <span class="cal rv" id="cal" data-skills="<%= JSON.stringify(heroRoles) %>" style="--d:520ms">
+                                    <span class="cal__body">
+                                        <span class="cal__stand"></span>
+                                        <span class="cal__stack">
+                                            <span class="cal__back">
+                                                <span class="cal__holes"></span>
+                                            </span>
+                                            <span class="cal__page" data-under>
+                                                <span class="cal__holes"></span>
+                                                <span class="cal__word"></span>
+                                                <span class="cal__no"></span>
+                                                <span class="cal__shade"></span>
+                                            </span>
+                                            <span class="cal__leaf">
+                                                <span class="cal__face">
+                                                    <span class="cal__holes"></span>
+                                                    <span class="cal__word"></span>
+                                                    <span class="cal__no"></span>
+                                                    <span class="cal__shade"></span>
+                                                </span>
+                                                <span class="cal__rear">
+                                                    <span class="cal__holes"></span>
+                                                </span>
+                                            </span>
+                                        </span>
+                                        <span class="cal__rings"></span>
+                                    </span>
+                                    <span class="cal__measure"></span>
+                                </span>
+                            </span>
+                            <% } %>
+                        </span>
+                    </h1>
+                    <div class="ctas rv" style="--d:750ms">
+                        <button class="pill pill--dark pill--arrow" data-contact>
+                            <span class="pill__in" data-h="s 1 1.04" data-hs="320 18" data-ht=".pill">
+                                Hire me
+              
+                                <span class="pill__badge">
+                                    <svg aria-hidden="true" focusable="false" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-h="x 0 3" data-hs="320 18" data-ht=".pill">
+                                        <path d="M5 12h14M13 6l6 6-6 6"/>
+                                    </svg>
+                                </span>
+                            </span>
+                        </button>
+                        <button class="pill pill--outline" data-go="projectsShowcase">
+                            <span class="pill__in" data-h="s 1 1.04" data-hs="320 18" data-ht=".pill">See my work</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <div class="shell hero__bar rv">
+                <span><%= (profile && profile.availabilityStatus) || '' %></span>
+                <span class="mid"><%= (profile && profile.location) || '' %></span>
+                <span class="scroll">
+                    Scroll to explore <i aria-hidden="true">↓</i>
+                </span>
+            </div>
+        </section>
+        <!-- ============ 3D Books Showcase: Selected Works ============ -->
+        <section id="projectsShowcase" class="books-showcase-section" aria-label="Selected Works Showcase">
+            <!-- Desktop: Vengeance UI 3D Books Showcase -->
+            <div id="homeBooksShowcase" class="books-showcase-mount bs-desktop-only"></div>
+            <!-- Mobile: Framer Motion Style Scroll-Triggered Card Stack -->
+            <div id="homeMobileCards" class="mobile-scroll-cards bs-mobile-only" aria-label="Mobile Project Showcase"></div>
+        </section>
+        <% if (storyEntries.length) { %>
+        <section id="about" class="story" aria-labelledby="storyTitle" style="--n:<%= storyEntries.length %>">
+            <div class="story__amb" aria-hidden="true">
+                <i></i>
+                <i></i>
+                <i></i>
+                <i></i>
+                <i></i>
+            </div>
+            <div class="story__track">
+                <div class="story__pin">
+                    <div class="shell story__stage">
+                        <div class="story__clock">
+                            <canvas class="story__bg" aria-hidden="true"></canvas>
+                            <p class="eyebrow">My story</p>
+                            <h2 class="story__h" id="storyTitle">Let's go back in time.</h2>
+                            <div class="story__yr" aria-hidden="true">
+                                <span class="dg">
+                                    <span class="dg__c">
+                                        <i>0</i>
+                                        <i>1</i>
+                                        <i>2</i>
+                                        <i>3</i>
+                                        <i>4</i>
+                                        <i>5</i>
+                                        <i>6</i>
+                                        <i>7</i>
+                                        <i>8</i>
+                                        <i>9</i>
+                                    </span>
+                                </span>
+                                <span class="dg">
+                                    <span class="dg__c">
+                                        <i>0</i>
+                                        <i>1</i>
+                                        <i>2</i>
+                                        <i>3</i>
+                                        <i>4</i>
+                                        <i>5</i>
+                                        <i>6</i>
+                                        <i>7</i>
+                                        <i>8</i>
+                                        <i>9</i>
+                                    </span>
+                                </span>
+                                <span class="dg">
+                                    <span class="dg__c">
+                                        <i>0</i>
+                                        <i>1</i>
+                                        <i>2</i>
+                                        <i>3</i>
+                                        <i>4</i>
+                                        <i>5</i>
+                                        <i>6</i>
+                                        <i>7</i>
+                                        <i>8</i>
+                                        <i>9</i>
+                                    </span>
+                                </span>
+                                <span class="dg">
+                                    <span class="dg__c">
+                                        <i>0</i>
+                                        <i>1</i>
+                                        <i>2</i>
+                                        <i>3</i>
+                                        <i>4</i>
+                                        <i>5</i>
+                                        <i>6</i>
+                                        <i>7</i>
+                                        <i>8</i>
+                                        <i>9</i>
+                                    </span>
+                                </span>
+                            </div>
+                            <p class="story__when" aria-hidden="true"><%= storyEntries[0].when %></p>
+                            <div class="story__meter" aria-hidden="true">
+                                <svg aria-hidden="true" focusable="false" class="story__rw" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M3 12a9 9 0 1 0 3-6.7"/>
+                                    <path d="M3 4v5h5"/>
+                                    <path d="M12 7v5l3 2"/>
+                                </svg>
+                                <span class="story__count">01</span>
+                                <span class="story__of">/ <%= String(storyEntries.length).padStart(2, '0') %></span>
+                                <i class="story__bar">
+                                    <b></b>
+                                </i>
+                            </div>
+                        </div>
+                        <div class="story__line">
+                            <span class="story__rail" aria-hidden="true"></span>
+                            <span class="story__ttrack" aria-hidden="true">
+                                <span class="story__tail"></span>
+                            </span>
+                            <span class="story__dtrack" aria-hidden="true">
+                                <span class="story__dot"></span>
+                            </span>
+                            <ol class="story__list">
+                                <% storyEntries.forEach((entry, index) => { %>
+                                <li class="ch <%= index === 0 ? 'ch--now' : '' %>" data-y="<%= entry.year %>" data-when="<%= entry.when %>">
+                                    <p class="ch__date"><%= entry.when %></p>
+                                    <h3 class="ch__t"><%= entry.title %></h3>
+                                    <% if (entry.org) { %><p class="ch__org"><%= entry.org %></p><% } %>
+                                    <% if (entry.details.length) { %><ul class="ch__b"><% entry.details.forEach(detail => { %><li><%= detail %></li><% }) %></ul><% } %>
+                                </li>
+                                <% }) %>
+                            </ol>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <% } %>
+        <% if (skillGroups.length) { %>
+        <section class="skills" aria-labelledby="skillsTitle">
+            <div class="shell skills__inner">
+                <header class="skills__head">
+                    <p class="skills__eyebrow">Skills &amp; tools</p>
+                    <h2 class="skills__title" id="skillsTitle">Technologies I work with</h2>
+                </header>
+                <div class="skills__grid" aria-label="Draggable technology stickers">
+                    <% skillGroups.forEach((group, index) => { %>
+                    <article class="skill-card" style="--sticker-i:<%= index %>">
+                        <span class="skill-card__tape" aria-hidden="true"></span>
+                        <div class="skill-card__top"><span class="skill-card__mark" aria-hidden="true"><%= ['</>', '✳', '◈', '✎'][index % 4] %></span><h3><%= group.category %></h3></div>
+                        <div class="skill-card__tags"><% group.items.forEach(skill => { %><span><%= skill.name %></span><% }) %></div>
+                    </article>
+                    <% }) %>
+                </div>
+            </div>
+        </section>
+        <% } %>
+    </main>
+    <div class="sfw">
+        <%- include('../partials/footer') %>
+    </div>
+    <script>
+        // press F for full screen (again, or Esc, to leave); ignored while typing
+        ( () => {
+            const typing = e => {
+                const t = e.target;
+                return t && (t.isContentEditable || /^(INPUT|TEXTAREA|SELECT)$/.test(t.tagName));
+            }
+            ;
+            const toggle = () => {
+                const d = document
+                  , el = d.documentElement;
+                if (d.fullscreenElement || d.webkitFullscreenElement)
+                    (d.exitFullscreen || d.webkitExitFullscreen).call(d);
+                else
+                    (el.requestFullscreen || el.webkitRequestFullscreen)?.call(el)?.catch?.( () => {}
+                    );
+            }
+            ;
+            addEventListener('keydown', e => {
+                if ((e.key !== 'f' && e.key !== 'F') || e.metaKey || e.ctrlKey || e.altKey || typing(e))
+                    return;
+                e.preventDefault();
+                if (window.top !== window) {
+                    try {
+                        parent.postMessage({
+                            wall: 'fullscreen'
+                        }, location.origin === 'null' ? '*' : location.origin);
+                    } catch (_) {}
+                    return;
+                }
+                toggle();
+            }
+            );
+            if (window.top === window)
+                addEventListener('message', e => {
+                    // only one of this page's own frames can ask for full screen
+                    if (!e.data || e.data.wall !== 'fullscreen' || ![...document.querySelectorAll('iframe')].some(f => f.contentWindow === e.source))
+                        return;
+                    toggle();
+                }
+                );
+        }
+        )();
+    </script>
+    <!-- ============ Door cursor + walk-through veil ============ -->
+    <div class="veil" id="veil" aria-hidden="true" hidden></div>
+    <div class="shade" id="shade" aria-hidden="true" hidden></div>
+    <div class="passage" id="passage" aria-hidden="true" hidden></div>
+    <div class="wallv" id="wallv"></div>
+    
+    
+    <%- include('../partials/contact_modal') %>
+
+    <script type="importmap">
+        {
+            "imports": {
+                "lenis": "/vendor/lenis.min.mjs"
+            }
+        }</script>
+    <script type="module">
+        const COLOUR_SRC = "<%= (profile && profile.heroImageColor) ? profile.heroImageColor : '/uploads/anil_sangam_colour.png' %>";
+        // revealed under the cursor
+        const $ = (s, r=document) => r.querySelector(s);
+        const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
+        const canHover = matchMedia('(hover: hover) and (pointer: fine)').matches;
+        const root = document.documentElement;
+
+        /* ---------- adaptive grid scale-up above 1920px ---------- */
+        function applyAdaptiveGrid() {
+            const FONT_BASE = 16
+              , baseWidth = 1920
+              , coef = 0.6666;
+            const w = window.innerWidth;
+            const widthReduction = ((baseWidth - w) / baseWidth) * 100;
+            const size = FONT_BASE - (FONT_BASE * (widthReduction * coef)) / 100;
+            if (size > FONT_BASE)
+                root.style.fontSize = size + 'px';
+            else
+                root.style.removeProperty('font-size');
+        }
+        applyAdaptiveGrid();
+        addEventListener('resize', applyAdaptiveGrid);
+
+        /* ---------- scroll lock (Lenis attached once loaded) ---------- */
+        let lenis = null
+          , scrollEnabled = true
+          , locks = 0;
+        // touch state shared by the pinned sections: never snap while a finger is down or a flick is still coasting
+        window.__touching = false;
+        addEventListener('touchstart', () => {
+            window.__touching = true;
+        }
+        , {
+            passive: true,
+            capture: true
+        });
+        addEventListener('touchend', () => {
+            window.__touching = false;
+        }
+        , {
+            passive: true,
+            capture: true
+        });
+        addEventListener('touchcancel', () => {
+            window.__touching = false;
+        }
+        , {
+            passive: true,
+            capture: true
+        });
+        const COARSE = matchMedia('(pointer: coarse)').matches;
+        window.__snapTo = top => {
+            if (!COARSE && window.__lenis)
+                window.__lenis.scrollTo(top, {
+                    duration: .6,
+                    easing: x => 1 - Math.pow(1 - x, 3)
+                });
+            else
+                scrollTo({
+                    top,
+                    behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth'
+                });
+        }
+        ;
+        function stopScroll() {
+            locks++;
+            scrollEnabled = false;
+            lenis?.stop();
+            Object.assign(root.style, {
+                position: 'relative',
+                overflow: 'hidden',
+                height: '100%'
+            });
+        }
+        function startScroll() {
+            locks = Math.max(0, locks - 1);
+            if (locks)
+                return;
+            scrollEnabled = true;
+            lenis?.start();
+            root.style.removeProperty('position');
+            root.style.removeProperty('overflow');
+            root.style.removeProperty('height');
+        }
+        function scrollToId(id) {
+            const el = document.getElementById(id);
+            if (!el)
+                return;
+            scrollEnabled = false;
+            setTimeout( () => {
+                const top = el.getBoundingClientRect().top + window.pageYOffset;
+                if (lenis)
+                    lenis.scrollTo(top);
+                else
+                    window.scrollTo({
+                        top,
+                        behavior: 'smooth'
+                    });
+                setTimeout( () => {
+                    scrollEnabled = true;
+                }
+                , 100);
+            }
+            , 50);
+        }
+        window.scrollTo(0, 0);
+
+        /* ---------- spring helper (mass 1, semi-implicit Euler) ---------- */
+        function spring({tension, friction}, render) {
+            let x = 0
+              , v = 0
+              , target = 0
+              , raf = 0;
+            const step = () => {
+                const dt = 1 / 60
+                  , a = tension * (target - x) - friction * v;
+                v += a * dt;
+                x += v * dt;
+                render(x);
+                if (Math.abs(target - x) < 0.001 && Math.abs(v) < 0.001) {
+                    x = target;
+                    v = 0;
+                    render(x);
+                    raf = 0;
+                    return;
+                }
+                raf = requestAnimationFrame(step);
+            }
+            ;
+            render(0);
+            return {
+                set(t) {
+                    target = t;
+                    if (!raf)
+                        raf = requestAnimationFrame(step);
+                }
+            };
+        }
+        // declarative hovers: data-h="s 1 1.04|y 0 -2|o .8 1"  data-hs="tension friction"  data-ht="closest trigger"
+        function bindHovers(scope=document) {
+            scope.querySelectorAll('[data-h]').forEach(el => {
+                if (el._h)
+                    return;
+                el._h = 1;
+                const props = el.dataset.h.split('|').map(p => {
+                    const [k,a,b] = p.trim().split(/\s+/);
+                    return {
+                        k,
+                        a: +a,
+                        b: +b
+                    };
+                }
+                );
+                const [tension,friction] = (el.dataset.hs || '320 18').split(/\s+/).map(Number);
+                const trig = el.dataset.ht ? el.closest(el.dataset.ht) || el : el;
+                const render = p => {
+                    const v = {
+                        s: 1,
+                        x: 0,
+                        y: 0,
+                        r: 0
+                    };
+                    let o = null;
+                    props.forEach( ({k, a, b}) => {
+                        const val = a + (b - a) * p;
+                        if (k === 'o')
+                            o = val;
+                        else
+                            v[k] = val;
+                    }
+                    );
+                    el.style.transform = `translate(${v.x}px,${v.y}px) rotate(${v.r}deg) scale(${v.s})`;
+                    if (o !== null)
+                        el.style.opacity = o;
+                }
+                ;
+                const s = spring({
+                    tension,
+                    friction
+                }, render);
+                if (!canHover)
+                    return;
+                trig.addEventListener('mouseenter', () => s.set(1));
+                trig.addEventListener('mouseleave', () => s.set(0));
+                trig.addEventListener('focusin', () => s.set(1));
+                trig.addEventListener('focusout', () => s.set(0));
+            }
+            );
+        }
+
+        /* ---------- sticky header: gets a soft backing once the page scrolls ---------- */
+        {
+            const hdr = $('.site-header') || $('.hdr');
+            const upd = () => { if (hdr) hdr.classList.toggle('stuck', scrollY > 24); };
+            addEventListener('scroll', upd, {
+                passive: true
+            });
+            upd();
+        }
+        /* ---------- overlays ---------- */
+        const FOCUSABLE = 'a[href],button:not([disabled]),input:not([disabled]),select:not([disabled]),textarea:not([disabled]),[tabindex]:not([tabindex="-1"])';
+        function openLayer(el, onKey) {
+            el.hidden = false;
+            stopScroll();
+            requestAnimationFrame( () => requestAnimationFrame( () => el.classList.add('open')));
+            el._key = e => {
+                if (e.key === 'Escape') {
+                    onKey();
+                    return;
+                }
+                // keep Tab inside the open layer: without this the keyboard walks onto the page behind it
+                if (e.key !== 'Tab')
+                    return;
+                const f = [...el.querySelectorAll(FOCUSABLE)].filter(n => n.offsetWidth || n.offsetHeight || n.getClientRects().length);
+                if (!f.length)
+                    return;
+                const first = f[0]
+                  , last = f[f.length - 1];
+                if (!el.contains(document.activeElement)) {
+                    e.preventDefault();
+                    first.focus();
+                    return;
+                }
+                if (e.shiftKey && document.activeElement === first) {
+                    e.preventDefault();
+                    last.focus();
+                } else if (!e.shiftKey && document.activeElement === last) {
+                    e.preventDefault();
+                    first.focus();
+                }
+            }
+            ;
+            addEventListener('keydown', el._key);
+        }
+        function closeLayer(el, after) {
+            if (el.hidden)
+                return;
+            el.classList.remove('open');
+            el.classList.add('closing');
+            removeEventListener('keydown', el._key);
+            setTimeout( () => {
+                el.hidden = true;
+                el.classList.remove('closing');
+                startScroll();
+                after?.();
+            }
+            , 460);
+        }
+        // Global helper for opening modal or doors
+        window.openModal = () => {
+            const m = $('#modal');
+            if (m) {
+                m.hidden = false;
+                m.classList.add('on');
+                document.body.style.overflow = 'hidden';
+            }
+        };
+        // request modal
+        const CONTACT_EMAIL = document.body.dataset.contactEmail || '';
+        // where project requests go (assembled here so address-harvesting bots don't find it in the page)
+        document.querySelectorAll('[data-mail]').forEach(a => {
+            a.href = 'mailto:' + CONTACT_EMAIL;
+            a.textContent = CONTACT_EMAIL;
+        }
+        );
+        const modal = $('#modal')
+          , form = $('#reqForm');
+        let lastFocus = null;
+        function openModal() {
+            lastFocus = document.activeElement;
+            openLayer(modal, closeModal);
+            setTimeout( () => $('#f-name')?.focus({
+                preventScroll: true
+            }), 120);
+        }
+        let lastInput = 'mouse';
+        addEventListener('pointerdown', () => {
+            lastInput = 'mouse';
+        }
+        , true);
+        addEventListener('keydown', e => {
+            if (e.key === 'Tab' || e.key === 'Enter' || e.key === ' ')
+                lastInput = 'key';
+        }
+        , true);
+        function closeModal() {
+            document.body.style.removeProperty('overflow');
+            if (window.unlockScroll) window.unlockScroll();
+            closeLayer(modal, () => {
+                // give focus back only to keyboard users, so a mouse click doesn't leave the nav item looking hovered
+                if (lastInput === 'key')
+                    lastFocus?.focus?.({
+                        preventScroll: true
+                    });
+                else
+                    document.activeElement?.blur?.();
+                setTimeout( () => {
+                    form.reset();
+                    $('#mForm').hidden = false;
+                $('#mFormError').hidden = true;
+                    $('#mSuccess').hidden = true;
+                    $('#mSendLbl').textContent = SEND_LABEL;
+                }
+                , 300);
+            }
+            );
+        }
+        modal.addEventListener('click', closeModal);
+        $('#mPanel').addEventListener('click', e => e.stopPropagation());
+        $('#mClose').addEventListener('click', closeModal);
+        $('#mDone').addEventListener('click', closeModal);
+        // Store contact inquiries in the admin panel without opening an email client.
+        const SEND_LABEL = 'Send inquiry';
+        $('#mSendLbl').textContent = SEND_LABEL;
+        form.addEventListener('submit', e => {
+            e.preventDefault();
+            const d = new FormData(form)
+              , name = (d.get('name') || '').trim()
+              , mail = (d.get('email') || '').trim()
+              , phone = (d.get('phone') || '').trim()
+              , proj = (d.get('project') || '').trim();
+            // Submit to the application so the inquiry is recorded for the admin panel.
+            const btn = $('#mSend');
+            btn.disabled = true;
+            $('#mSendLbl').textContent = 'Sending…';
+            const messageData = new URLSearchParams({
+                name,
+                email: mail,
+                message: proj,
+                budget: phone,
+                projectType: ''
+            });
+            fetch('/contact', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded'
+                },
+                body: messageData.toString()
+            }).then(async r => {
+                const result = await r.json();
+                if (!r.ok || !result.success)
+                    throw new Error(r.status);
+                $('#mOkT').textContent = 'Message sent';
+                $('#mOkP').textContent = `Thanks, ${name}. Your inquiry has been saved. I'll reply to ${mail} within one business day.`;
+                $('#mForm').hidden = true;
+                $('#mSuccess').hidden = false;
+                $('#mDone').focus();
+            }
+            ).catch(() => {
+                const error = $('#mFormError');
+                error.textContent = 'Could not save your inquiry. Please try again in a moment.';
+                error.hidden = false;
+            }).finally( () => {
+                btn.disabled = false;
+                $('#mSendLbl').textContent = SEND_LABEL;
+            }
+            );
+        }
+        );
+        // routing for in-page buttons
+        document.addEventListener('click', e => {
+            const ln = e.target.closest('a[data-go]');
+            if (ln) {
+                if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey || e.button)
+                    return;
+                e.preventDefault();
+            }
+            // a real link for crawlers and new tabs; a plain click stays in the page
+            const c = e.target.closest('[data-contact]');
+            if (c) {
+                openModal();
+                return;
+            }
+
+            const g = e.target.closest('[data-go]');
+            if (g)
+                scrollToId(g.dataset.go);
+        }
+        );
+
+        bindHovers();
+
+        /* Warm bulb light, clipped to the portrait's own transparent silhouette. */
+        function warmPortraitLight(stage, canvas) {
+            if (!stage || !canvas)
+                return;
+            const base = stage.querySelector('img');
+            const ctx = canvas.getContext('2d');
+            const dpr = Math.min(window.devicePixelRatio || 1, 2);
+            function paint() {
+                const rect = stage.getBoundingClientRect();
+                const w = Math.max(1, Math.round(rect.width * dpr));
+                const h = Math.max(1, Math.round(rect.height * dpr));
+                if (canvas.width !== w || canvas.height !== h) {
+                    canvas.width = w;
+                    canvas.height = h;
+                }
+                ctx.setTransform(1, 0, 0, 1, 0, 0);
+                ctx.clearRect(0, 0, w, h);
+                if (!base.naturalWidth)
+                    return;
+                const cx = w * .94;
+                const cy = h * .2;
+                const radius = Math.max(w * .82, h * .38);
+                const light = ctx.createRadialGradient(cx, cy, 0, cx, cy, radius);
+                light.addColorStop(0, 'rgba(255,188,102,.46)');
+                light.addColorStop(.42, 'rgba(255,178,88,.19)');
+                light.addColorStop(1, 'rgba(255,166,72,0)');
+                ctx.fillStyle = light;
+                ctx.fillRect(0, 0, w, h);
+                ctx.globalCompositeOperation = 'destination-in';
+                const scale = Math.min(w / base.naturalWidth, h / base.naturalHeight);
+                const dw = base.naturalWidth * scale;
+                const dh = base.naturalHeight * scale;
+                ctx.drawImage(base, (w - dw) / 2, h - dh, dw, dh);
+                ctx.globalCompositeOperation = 'source-over';
+            }
+            if (base.complete)
+                paint();
+            else
+                base.addEventListener('load', paint, { once: true });
+            new ResizeObserver(paint).observe(stage);
+        }
+        warmPortraitLight($('#fig'), $('#figWarm'));
+
+        /* ---------- Flip calendar: skills on an endless desk-calendar flip ---------- */
+        (function flipCalendar() {
+            const HOLD = 1700
+              , FLIP = 1250;
+            const cal = $('#cal');
+            if (!cal)
+                return;
+            const SKILLS = JSON.parse(cal.dataset.skills || '[]');
+            if (!SKILLS.length)
+                return;
+            const body = $('.cal__body', cal)
+              , leaf = $('.cal__leaf', cal);
+            const under = $('[data-under]', cal)
+              , face = $('.cal__face', cal);
+            const measure = $('.cal__measure', cal)
+              , rings = $('.cal__rings', cal);
+            const n = SKILLS.length;
+            let i = 0
+              , timer = 0
+              , flipping = false
+              , started = false;
+
+            const paint = (page, k) => {
+                $('.cal__word', page).textContent = SKILLS[k];
+                $('.cal__no', page).textContent = `${String(k + 1).padStart(2, '0')} / ${String(n).padStart(2, '0')}`;
+            }
+            ;
+            paint(face, 0);
+            paint(under, 1 % n);
+
+            // size the page to the longest skill, shrink the whole calendar if the column is too narrow
+            function fit() {
+                cal.style.fontSize = '';
+                const fs = parseFloat(getComputedStyle(cal).fontSize);
+                let max = 0;
+                for (const w of SKILLS) {
+                    measure.textContent = w;
+                    max = Math.max(max, measure.getBoundingClientRect().width);
+                }
+                const wEm = max / fs + 0.8 + 0.06;
+                // word + side padding
+                body.style.setProperty('--cal-w', wEm.toFixed(3) + 'em');
+                cal.style.setProperty('--cal-w', wEm.toFixed(3) + 'em');
+                const avail = cal.closest('.h1').getBoundingClientRect().width - fs * 0.25;
+                const need = wEm * fs;
+                if (need > avail)
+                    cal.style.fontSize = (fs * avail / need).toFixed(2) + 'px';
+                // spiral rings + punched holes, spaced roughly every 0.62em
+                const count = Math.max(5, Math.round((wEm - 0.64) / 0.7) + 1);
+                rings.innerHTML = '<i></i>'.repeat(count);
+                cal.querySelectorAll('.cal__holes').forEach(h => h.innerHTML = '<i></i>'.repeat(count));
+            }
+            fit();
+            document.fonts?.ready.then(fit);
+            addEventListener('resize', () => {
+                clearTimeout(fit._t);
+                fit._t = setTimeout(fit, 120);
+            }
+            );
+
+            function flip() {
+                if (document.hidden) {
+                    timer = setTimeout(flip, 600);
+                    return;
+                }
+                flipping = true;
+                const next = (i + 1) % n;
+                if (reduced) {
+                    i = next;
+                    paint(face, i);
+                    paint(under, (i + 1) % n);
+                    flipping = false;
+                    timer = setTimeout(flip, HOLD + 700);
+                    return;
+                }
+                const timing = {
+                    duration: FLIP,
+                    easing: 'cubic-bezier(.5,.05,.2,1)',
+                    fill: 'forwards'
+                };
+                face.animate([{
+                    opacity: 1
+                }, {
+                    opacity: 1,
+                    offset: .285
+                }, {
+                    opacity: 0,
+                    offset: .295
+                }, {
+                    opacity: 0
+                }], {
+                    duration: FLIP,
+                    easing: 'linear',
+                    fill: 'forwards'
+                });
+                // once the page is over the top it slips away behind the calendar instead of hanging over the text
+                // the back of the page catches the light as it comes over the top, then falls into shadow as it drops behind the stack
+                $('.cal__rear', leaf).animate([{
+                    filter: 'brightness(1)'
+                }, {
+                    filter: 'brightness(1.02)',
+                    offset: .29
+                }, {
+                    filter: 'brightness(.96)',
+                    offset: .45
+                }, {
+                    filter: 'brightness(.9)'
+                }], {
+                    duration: FLIP,
+                    easing: 'linear',
+                    fill: 'forwards'
+                });
+                const a = leaf.animate([{
+                    transform: 'translateZ(.004em) rotateX(0deg)'
+                }, {
+                    transform: 'translateZ(.004em) rotateX(352deg)'
+                }], timing);
+                $('.cal__shade', face).animate([{
+                    opacity: 0
+                }, {
+                    opacity: .45,
+                    offset: .2
+                }, {
+                    opacity: 0,
+                    offset: .275
+                }, {
+                    opacity: 0
+                }], {
+                    duration: FLIP,
+                    easing: 'linear',
+                    fill: 'forwards'
+                });
+                $('.cal__shade', under).animate([{
+                    opacity: .7
+                }, {
+                    opacity: 0
+                }], {
+                    duration: FLIP * .9,
+                    easing: 'cubic-bezier(.3,.6,.4,1)',
+                    fill: 'forwards'
+                });
+                a.onfinish = () => {
+                    i = next;
+                    paint(face, i);
+                    // the leaf now shows what was underneath…
+                    leaf.getAnimations({
+                        subtree: true
+                    }).forEach(x => x.cancel());
+                    cal.querySelectorAll('.cal__shade').forEach(sh => sh.getAnimations().forEach(x => x.cancel()));
+                    paint(under, (i + 1) % n);
+                    // …and the next skill waits below
+                    flipping = false;
+                    timer = setTimeout(flip, HOLD);
+                }
+                ;
+            }
+            const start = () => {
+                if (started)
+                    return;
+                started = true;
+                timer = setTimeout(flip, 1300);
+            }
+            ;
+            if (document.body.classList.contains('ready'))
+                start();
+            else
+                addEventListener('intro:ready', start, {
+                    once: true
+                });
+        }
+        )();
+
+        /* ---------- LiquidReveal: paint the colour cut-out along the cursor trail ----------
+   The trail is kept as a soft mask; each frame the canvas shows  bw·(1−mask) + colour·mask
+   (added with 'lighter'), so semi-transparent hair edges keep exactly the same opacity
+   instead of doubling up where the colour layer sits on the B&W one. */
+        function liquidReveal(stage, canvas, afterSrc, {brushRadius=143, decay=0.016}={}) {
+            if (reduced) {
+                canvas.remove();
+                return;
+            }
+            const base = stage.querySelector('img');
+            const ctx = canvas.getContext('2d');
+            const dpr = Math.min(window.devicePixelRatio || 1, 2);
+            const mk = () => {
+                const c = document.createElement('canvas');
+                return [c, c.getContext('2d')];
+            }
+            ;
+            const [bwC,bwX] = mk()
+              , [colC,colX] = mk()
+              , [mask,mX] = mk()
+              , [tmp,tX] = mk();
+            const bwImg = new Image()
+              , colImg = new Image();
+            bwImg.crossOrigin = "anonymous";
+            colImg.crossOrigin = "anonymous";
+            bwImg.src = base.currentSrc || base.src;
+            colImg.src = afterSrc;
+            let W = 1
+              , H = 1
+              , radius = brushRadius * dpr;
+            const points = [];
+            let last = null
+              , idle = 999
+              , running = false
+              , showing = false;
+
+            function fitDraw(x, img) {
+                x.clearRect(0, 0, W, H);
+                if (!img.naturalWidth)
+                    return;
+                // object-fit: contain + object-position: 50% 100%  (matches the base <img>)
+                const s = Math.min(W / img.naturalWidth, H / img.naturalHeight);
+                const dw = img.naturalWidth * s
+                  , dh = img.naturalHeight * s;
+                x.drawImage(img, (W - dw) / 2, H - dh, dw, dh);
+            }
+            function measure() {
+                const r = stage.getBoundingClientRect();
+                W = Math.max(1, Math.round(r.width * dpr));
+                H = Math.max(1, Math.round(r.height * dpr));
+                for (const c of [canvas, bwC, colC, mask, tmp]) {
+                    c.width = W;
+                    c.height = H;
+                }
+                radius = brushRadius * dpr;
+                fitDraw(bwX, bwImg);
+                fitDraw(colX, colImg);
+                hide();
+            }
+            bwImg.onload = () => fitDraw(bwX, bwImg);
+            colImg.onload = () => fitDraw(colX, colImg);
+
+            function stamp(x, y) {
+                const g = mX.createRadialGradient(x, y, 0, x, y, radius);
+                g.addColorStop(0, 'rgba(255,255,255,1)');
+                g.addColorStop(0.55, 'rgba(255,255,255,.82)');
+                g.addColorStop(1, 'rgba(255,255,255,0)');
+                mX.globalCompositeOperation = 'source-over';
+                mX.fillStyle = g;
+                mX.fillRect(x - radius, y - radius, radius * 2, radius * 2);
+            }
+            function render() {
+                ctx.globalCompositeOperation = 'source-over';
+                ctx.clearRect(0, 0, W, H);
+                ctx.drawImage(bwC, 0, 0);
+                ctx.globalCompositeOperation = 'destination-out';
+                ctx.drawImage(mask, 0, 0);
+                // bw · (1 − mask)
+                tX.globalCompositeOperation = 'source-over';
+                tX.clearRect(0, 0, W, H);
+                tX.drawImage(colC, 0, 0);
+                tX.globalCompositeOperation = 'destination-in';
+                tX.drawImage(mask, 0, 0);
+                // colour · mask
+                ctx.globalCompositeOperation = 'lighter';
+                ctx.drawImage(tmp, 0, 0);
+                ctx.globalCompositeOperation = 'source-over';
+            }
+            function show() {
+                if (!showing) {
+                    showing = true;
+                    render();
+                    base.style.visibility = 'hidden';
+                }
+            }
+            function hide() {
+                showing = false;
+                base.style.visibility = '';
+                ctx.clearRect(0, 0, W, H);
+                mX.clearRect(0, 0, W, H);
+            }
+            function frame() {
+                const drawing = points.length > 0;
+                if (drawing)
+                    idle = 0;
+                else
+                    idle++;
+                if (idle >= 120) {
+                    hide();
+                    running = false;
+                    return;
+                }
+                const fade = drawing ? decay : Math.min(decay + idle * 0.004, 0.5);
+                mX.globalCompositeOperation = 'destination-out';
+                mX.fillStyle = `rgba(0,0,0,${fade})`;
+                mX.fillRect(0, 0, W, H);
+                if (drawing) {
+                    for (const p of points)
+                        stamp(p.x, p.y);
+                    points.length = 0;
+                }
+                render();
+                show();
+                requestAnimationFrame(frame);
+            }
+            addEventListener('pointermove', e => {
+                if (!colImg.naturalWidth || !bwImg.naturalWidth)
+                    return;
+                const r = stage.getBoundingClientRect();
+                const x = (e.clientX - r.left) * dpr
+                  , y = (e.clientY - r.top) * dpr;
+                if (x < -radius || y < -radius || x > W + radius || y > H + radius) {
+                    last = null;
+                    return;
+                }
+                if (last) {
+                    const dx = x - last.x
+                      , dy = y - last.y
+                      , dist = Math.hypot(dx, dy);
+                    const step = Math.max(radius * 0.3, 1)
+                      , n = Math.min(Math.ceil(dist / step), 60);
+                    for (let i = 1; i <= n; i++)
+                        points.push({
+                            x: last.x + dx * i / n,
+                            y: last.y + dy * i / n
+                        });
+                } else
+                    points.push({
+                        x,
+                        y
+                    });
+                last = {
+                    x,
+                    y
+                };
+                if (!running) {
+                    running = true;
+                    idle = 0;
+                    requestAnimationFrame(frame);
+                }
+            }
+            , {
+                passive: true
+            });
+            new ResizeObserver(measure).observe(stage);
+            measure();
+        }
+        if (matchMedia('(max-width: 1023.98px), (hover: none)').matches) {
+            $('#figCanvas')?.remove();
+            // touch screens: the black & white photo, no reveal
+        } else
+            liquidReveal($('#fig'), $('#figCanvas'), COLOUR_SRC);
+
+        /* ---------- Mode (light / dark) ---------- */
+        const MODE_KEY = 'anil-mode';
+        const themeMeta = document.querySelector('meta[name="theme-color"]');
+        let modeAnimT = 0;
+        function getMode() {
+            return root.dataset.mode === 'dark' ? 'dark' : 'light';
+        }
+        function setMode(m, animate=true) {
+            if (animate && !reduced && document.startViewTransition) {
+                document.startViewTransition( () => setMode(m, false));
+                return;
+            }
+            if (m === 'dark')
+                root.dataset.mode = 'dark';
+            else
+                delete root.dataset.mode;
+            themeMeta?.setAttribute('content', m === 'dark' ? '#1A1818' : '#EEEAE6');
+            $('#cordHit')?.setAttribute('aria-checked', String(m === 'dark'));
+            try {
+                localStorage.setItem(MODE_KEY, m);
+            } catch (e) {}
+        }
+        setMode(getMode(), false);
+        const toggleMode = () => setMode(getMode() === 'dark' ? 'light' : 'dark');
+
+        /* ---------- Pull cord: verlet rope you can grab, swing and pull ----------
+   The rope hangs from above the top edge. Pulling it past the switch's spring travel
+   clicks the switch (toggles the mode) the way a ceiling pull-cord does; letting go
+   lets the spring snap the cord back up and the rope settles under gravity. */
+        (function pullCord() {
+            const wrap = $('#cord')
+              , cv = $('.cord__cv', wrap)
+              , hit = $('#cordHit');
+            const ctx = cv.getContext('2d');
+            const N = 26;
+            // segments
+            const G = 4600;
+            // gravity, px/s² (tuned so a ~30 cm cord swings at a lifelike ~1.2 s period)
+            const STEP = 1 / 120;
+            // fixed physics step
+            const ITER = 16;
+            // constraint passes
+            let dpr = 1
+              , W = 300
+              , H = 500;
+            let L = 220
+              , EXT_MAX = 46
+              , HIDDEN = 70
+              , seg = 10
+              , ax = 200
+              , thick = 3.2
+              , knobS = 1;
+            let pts = [];
+            // {x,y,px,py,w}
+            let ext = 0
+              , extV = 0
+              , armed = true;
+            let grab = -1
+              , grabOff = {
+                x: 0,
+                y: 0
+            }
+              , target = null
+              , ptr = null
+              , ptrPrev = null;
+            let downAt = 0
+              , downPos = null
+              , moved = 0;
+            let acc = 0
+              , lastT = 0
+              , t = 0;
+            let dropped = false
+              , live = false;
+
+            function layout() {
+                const rem = parseFloat(getComputedStyle(root).fontSize) || 16;
+                const vw = innerWidth
+                  , vh = innerHeight;
+                let offset;
+                // anchor distance from the viewport's right edge
+                if (vw >= 1024) {
+                    offset = 4.25 * rem;
+                    L = Math.min(270, Math.max(190, vh * .3));
+                    EXT_MAX = 72;
+                    thick = 3.7;
+                    knobS = 1.35;
+                } else if (vw >= 640) {
+                    offset = 5.9 * rem;
+                    L = Math.min(220, Math.max(160, vh * .2));
+                    EXT_MAX = 62;
+                    thick = 3.4;
+                    knobS = 1.28;
+                } else {
+                    offset = 3.4 * rem;
+                    L = 70;
+                    EXT_MAX = 54;
+                    thick = 3.1;
+                    knobS = 1.2;
+                }
+                HIDDEN = EXT_MAX + 18;
+                W = Math.min(vw, vw >= 1024 ? 640 : 340);
+                H = Math.round(L + EXT_MAX + 170);
+                wrap.style.height = H + 'px';
+                dpr = Math.min(devicePixelRatio || 1, 2);
+                cv.width = Math.round(W * dpr);
+                cv.height = Math.round(H * dpr);
+                // small screens: hang just left of the local-time badge
+                const ck = document.querySelector('.hdr .clock');
+                if (ck && ck.offsetWidth) {
+                    // desktop: hang right beside the local-time badge; small screens: near the right edge (over the badge is fine)
+                    offset = vw >= 1200 ? Math.max(1.2 * rem, vw - ck.getBoundingClientRect().right - 1.4 * rem) : 2.4 * rem;
+                }
+                const newAx = W - offset;
+                const total = L + HIDDEN;
+                seg = total / N;
+                if (!pts.length) {
+                    for (let i = 0; i <= N; i++) {
+                        const x = newAx
+                          , y = -HIDDEN + i * seg;
+                        pts.push({
+                            x,
+                            y,
+                            px: x,
+                            py: y,
+                            w: i === 0 ? 0 : i === N ? .28 : 1
+                        });
+                    }
+                } else {
+                    const dx = newAx - ax;
+                    for (const p of pts) {
+                        p.x += dx;
+                        p.px += dx;
+                    }
+                }
+                ax = newAx;
+            }
+
+            /* ----- physics ----- */
+            function step(dt) {
+                if (!dropped)
+                    return;
+                t += dt;
+                // switch spring (anchor travel) — free when nobody is pulling
+                if (grab < 0) {
+                    const K = 760
+                      , C = 21;
+                    extV += (-K * ext - C * extV) * dt;
+                    ext += extV * dt;
+                }
+                if (ext > EXT_MAX * .8 && armed && live) {
+                    armed = false;
+                    toggleMode();
+                    try {
+                        navigator.vibrate?.(12);
+                    } catch (e) {}
+                }
+                if (ext < EXT_MAX * .22)
+                    armed = true;
+
+                const a = pts[0];
+                const idleSway = live && !reduced && grab < 0 ? Math.sin(t * 1.45) * 2.4 : 0;
+                a.x = a.px = ax + idleSway;
+                a.y = a.py = -HIDDEN + ext;
+
+                const wind = reduced ? 0 : (Math.sin(t * .63) * 16 + Math.sin(t * 1.71 + 1.3) * 7);
+                const damp = grab >= 0 ? .992 : .9875;
+                for (let i = 1; i <= N; i++) {
+                    if (i === grab)
+                        continue;
+                    const p = pts[i];
+                    const vx = (p.x - p.px) * damp
+                      , vy = (p.y - p.py) * damp;
+                    p.px = p.x;
+                    p.py = p.y;
+                    p.x += vx + wind * dt * dt * (i / N);
+                    p.y += vy + G * dt * dt;
+                }
+                if (grab >= 0 && target) {
+                    const g = pts[grab];
+                    g.px = g.x;
+                    g.py = g.y;
+                    g.x = target.x;
+                    g.y = target.y;
+                }
+                for (let k = 0; k < ITER; k++) {
+                    for (let i = 0; i < N; i++) {
+                        const p1 = pts[i]
+                          , p2 = pts[i + 1];
+                        const w1 = (i === grab) ? 0 : p1.w
+                          , w2 = (i + 1 === grab) ? 0 : p2.w;
+                        const sw = w1 + w2;
+                        if (!sw)
+                            continue;
+                        const dx = p2.x - p1.x
+                          , dy = p2.y - p1.y;
+                        const d = Math.hypot(dx, dy) || 1e-6;
+                        const diff = (d - seg) / d / sw;
+                        p1.x += dx * diff * w1;
+                        p1.y += dy * diff * w1;
+                        p2.x -= dx * diff * w2;
+                        p2.y -= dy * diff * w2;
+                    }
+                }
+                // keep the knob inside the drawing area
+                for (let i = 1; i <= N; i++) {
+                    const p = pts[i];
+                    if (p.x < 14) {
+                        p.x = 14;
+                    } else if (p.x > W - 14) {
+                        p.x = W - 14;
+                    }
+                    if (p.y > H - 46) {
+                        p.y = H - 46;
+                    }
+                }
+            }
+
+            // while dragging: the pointer sets the grabbed point; the switch spring gives way
+            function updateDrag() {
+                if (grab < 0 || !ptr)
+                    return;
+                let tx = ptr.x - grabOff.x
+                  , ty = ptr.y - grabOff.y;
+                const bx = ax
+                  , by = -HIDDEN;
+                const reach = grab * seg;
+                // rope length from switch to grabbed point
+                let dx = tx - bx
+                  , dy = ty - by
+                  , d = Math.hypot(dx, dy) || 1e-6;
+                let need = d - reach;
+                if (need > EXT_MAX) {
+                    // past the end stop: heavy rubbery resistance
+                    const over = need - EXT_MAX;
+                    const allowed = reach + EXT_MAX + over * .14 / (1 + over / 160);
+                    tx = bx + dx / d * allowed;
+                    ty = by + dy / d * allowed;
+                    need = EXT_MAX;
+                }
+                const targetExt = Math.max(0, need);
+                const prevExt = ext;
+                ext += (targetExt - ext) * .55;
+                extV = (ext - prevExt) * 60;
+                target = {
+                    x: Math.max(14, Math.min(W - 14, tx)),
+                    y: Math.min(H - 46, ty)
+                };
+            }
+
+            /* ----- input ----- */
+            const local = e => {
+                const r = wrap.getBoundingClientRect();
+                return {
+                    x: e.clientX - r.left,
+                    y: e.clientY - r.top
+                };
+            }
+            ;
+            function startDrag(e_, i_) {
+                wake();
+                return startDrag_(e_, i_);
+            }
+            function startDrag_(e, idx) {
+                grab = idx;
+                const p = local(e)
+                  , g = pts[idx];
+                grabOff = {
+                    x: p.x - g.x,
+                    y: p.y - g.y
+                };
+                ptr = ptrPrev = p;
+                target = {
+                    x: g.x,
+                    y: g.y
+                };
+                downAt = performance.now();
+                downPos = p;
+                moved = 0;
+                wrap.classList.add('dragging');
+                addEventListener('pointermove', onMove, {
+                    passive: false
+                });
+                addEventListener('pointerup', endDrag);
+                addEventListener('pointercancel', endDrag);
+            }
+            function onMove(e) {
+                if (grab < 0)
+                    return;
+                e.preventDefault();
+                ptrPrev = ptr;
+                ptr = local(e);
+                moved = Math.max(moved, Math.hypot(ptr.x - downPos.x, ptr.y - downPos.y));
+            }
+            function endDrag() {
+                if (grab < 0)
+                    return;
+                const g = pts[grab];
+                // fling: carry the hand's last velocity into the rope
+                if (ptr && ptrPrev) {
+                    const vx = (ptr.x - ptrPrev.x)
+                      , vy = (ptr.y - ptrPrev.y);
+                    g.px = g.x - vx * .5;
+                    g.py = g.y - vy * .5;
+                }
+                const tap = moved < 6 && performance.now() - downAt < 300;
+                grab = -1;
+                target = null;
+                ptr = ptrPrev = null;
+                wrap.classList.remove('dragging');
+                removeEventListener('pointermove', onMove);
+                removeEventListener('pointerup', endDrag);
+                removeEventListener('pointercancel', endDrag);
+                if (tap)
+                    tug();
+            }
+            // a quick tug (tap, click or keyboard) yanks the cord just past the click point
+            function tug() {
+                wake();
+                extV = EXT_MAX * 44;
+                pts[N].px = pts[N].x + 1.5;
+            }
+
+            hit.addEventListener('pointerdown', e => {
+                if (!dropped)
+                    return;
+                e.preventDefault();
+                try {
+                    hit.setPointerCapture(e.pointerId);
+                } catch (_) {}
+                startDrag(e, N);
+            }
+            );
+            hit.addEventListener('keydown', e => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    tug();
+                }
+            }
+            );
+            hit.addEventListener('click', e => e.preventDefault());
+
+            // desktop: the rope itself can be grabbed anywhere along its length
+            document.addEventListener('pointerdown', e => {
+                if (!dropped || e.pointerType !== 'mouse' || e.button !== 0 || grab >= 0 || e.target === hit)
+                    return;
+                const p = local(e);
+                if (p.x < 0 || p.y < 0 || p.x > W || p.y > H)
+                    return;
+                let best = -1
+                  , bd = 11;
+                for (let i = 2; i <= N; i++) {
+                    if (pts[i].y < 0)
+                        continue;
+                    const d = Math.hypot(pts[i].x - p.x, pts[i].y - p.y);
+                    if (d < bd) {
+                        bd = d;
+                        best = i;
+                    }
+                }
+                if (best > 0) {
+                    e.preventDefault();
+                    startDrag(e, best);
+                }
+            }
+            );
+            // brushing past the rope with the mouse nudges it
+            addEventListener('pointermove', e => {
+                if (grab >= 0 || e.pointerType !== 'mouse')
+                    return;
+                const p = local(e);
+                if (p.x < -20 || p.y < -20 || p.x > W + 20 || p.y > H + 20) {
+                    brush.last = null;
+                    return;
+                }
+                if (brush.last) {
+                    wake();
+                    const vx = p.x - brush.last.x
+                      , vy = p.y - brush.last.y;
+                    for (let i = 2; i <= N; i++) {
+                        const q = pts[i]
+                          , d = Math.hypot(q.x - p.x, q.y - p.y);
+                        if (d < 16) {
+                            const f = (1 - d / 16) * .35;
+                            q.x += vx * f;
+                            q.y += vy * f * .5;
+                        }
+                    }
+                }
+                brush.last = p;
+            }
+            , {
+                passive: true
+            });
+            const brush = {
+                last: null
+            };
+
+            /* ----- drawing ----- */
+            function pathThrough(c, ps) {
+                c.beginPath();
+                c.moveTo(ps[0].x, ps[0].y);
+                for (let i = 1; i < ps.length - 1; i++) {
+                    const mx = (ps[i].x + ps[i + 1].x) / 2
+                      , my = (ps[i].y + ps[i + 1].y) / 2;
+                    c.quadraticCurveTo(ps[i].x, ps[i].y, mx, my);
+                }
+                const l = ps[ps.length - 1];
+                c.lineTo(l.x, l.y);
+            }
+            // sample the smoothed rope densely for the braid texture
+            function samples(ps, spacing) {
+                const out = [];
+                let carry = 0;
+                for (let i = 0; i < ps.length - 1; i++) {
+                    const a = ps[i]
+                      , b = ps[i + 1];
+                    const dx = b.x - a.x
+                      , dy = b.y - a.y
+                      , len = Math.hypot(dx, dy) || 1e-6;
+                    let s = carry;
+                    while (s < len) {
+                        out.push({
+                            x: a.x + dx * s / len,
+                            y: a.y + dy * s / len,
+                            tx: dx / len,
+                            ty: dy / len
+                        });
+                        s += spacing;
+                    }
+                    carry = s - len;
+                }
+                return out;
+            }
+            function knobPath(c) {
+                c.beginPath();
+                c.moveTo(-7, 3);
+                c.lineTo(7, 3);
+                c.bezierCurveTo(8, 11, 18, 15, 23, 28);
+                c.bezierCurveTo(31, 47, 16, 59, 0, 60);
+                c.bezierCurveTo(-16, 59, -31, 47, -23, 28);
+                c.bezierCurveTo(-18, 15, -8, 11, -7, 3);
+                c.closePath();
+            }
+            function drawKnob(c, x, y, ang, shadowOnly) {
+                c.save();
+                c.translate(x, y);
+                c.rotate(ang - Math.PI / 2);
+                c.scale(knobS, knobS);
+                if (shadowOnly) {
+                    knobPath(c);
+                    c.fill();
+                    c.beginPath();
+                    c.moveTo(-7, -2);
+                    c.lineTo(7, -2);
+                    c.lineTo(9, 11);
+                    c.lineTo(-9, 11);
+                    c.closePath();
+                    c.fill();
+                    c.restore();
+                    return;
+                }
+                const isLit = !root.hasAttribute('data-mode') || root.dataset.mode !== 'dark';
+                if (isLit) {
+                    const glow = .34 + (Math.sin(t * 2.1) + 1) * .1;
+                    const halo = c.createRadialGradient(0, 39, 4, 0, 39, 82);
+                    halo.addColorStop(0, `rgba(255,222,112,${glow})`);
+                    halo.addColorStop(.58, 'rgba(255,190,80,.12)');
+                    halo.addColorStop(1, 'rgba(255,190,80,0)');
+                    c.fillStyle = halo;
+                    c.beginPath();
+                    c.arc(0, 39, 82, 0, Math.PI * 2);
+                    c.fill();
+                }
+                knobPath(c);
+                const bg = c.createLinearGradient(-23, 0, 23, 0);
+                bg.addColorStop(0, isLit ? '#dfad45' : '#6f7078');
+                bg.addColorStop(.24, isLit ? '#ffe66d' : '#a3a4aa');
+                bg.addColorStop(.5, isLit ? '#fff48d' : '#c3c4c8');
+                bg.addColorStop(.78, isLit ? '#ffe86e' : '#8c8d94');
+                bg.addColorStop(1, isLit ? '#bf8730' : '#55565d');
+                c.fillStyle = bg;
+                c.fill();
+                c.strokeStyle = '#090a0c';
+                c.lineWidth = 2.6;
+                c.stroke();
+                // Draw only the tapered metal screw rings; leave the cap area transparent.
+                const fg = c.createLinearGradient(-10, 0, 10, 0);
+                fg.addColorStop(0, '#202126');
+                fg.addColorStop(.32, '#aeb2bd');
+                fg.addColorStop(.55, '#f4f5f8');
+                fg.addColorStop(1, '#292a30');
+                c.strokeStyle = '#101115';
+                c.lineWidth = 1.5;
+                c.beginPath();
+                c.moveTo(-7, -2);
+                c.lineTo(7, -2);
+                c.lineTo(9.5, 11.8);
+                c.lineTo(-9.5, 11.8);
+                c.closePath();
+                c.stroke();
+                c.strokeStyle = fg;
+                c.lineWidth = 1.8;
+                c.beginPath();
+                c.moveTo(-6.2, -1.4);
+                c.lineTo(6.2, -1.4);
+                c.lineTo(8.7, 11.2);
+                c.moveTo(-8.7, 11.2);
+                c.lineTo(-6.2, -1.4);
+                c.stroke();
+                c.beginPath();
+                c.moveTo(-6, -2);
+                c.quadraticCurveTo(0, -5, 6, -2);
+                c.stroke();
+                // Rings grow gradually from the top toward the bulb glass.
+                const capRings = [
+                    { y: -.4, rx: 6.0, ry: 1.65 },
+                    { y: 2.7, rx: 7.1, ry: 1.9 },
+                    { y: 5.8, rx: 8.3, ry: 2.15 },
+                    { y: 8.9, rx: 9.4, ry: 2.4 }
+                ];
+                for (const ring of capRings) {
+                    c.strokeStyle = 'rgba(15,16,20,.96)';
+                    c.lineWidth = 1.25;
+                    c.beginPath();
+                    c.ellipse(0, ring.y, ring.rx, ring.ry, 0, 0, Math.PI * 2);
+                    c.stroke();
+                    c.strokeStyle = 'rgba(255,255,255,.74)';
+                    c.lineWidth = .8;
+                    c.beginPath();
+                    c.ellipse(0, ring.y - .72, ring.rx * .9, ring.ry * .55, 0, Math.PI, Math.PI * 2);
+                    c.stroke();
+                }
+                c.strokeStyle = 'rgba(255,255,255,.62)';
+                c.lineWidth = .8;
+                c.beginPath();
+                c.moveTo(-8.5, 12.2);
+                c.lineTo(8.5, 12.2);
+                c.stroke();
+                c.save();
+                knobPath(c);
+                c.clip();
+                // soft glass reflection
+                const hl = c.createRadialGradient(-12, 38, .5, -12, 38, 15);
+                hl.addColorStop(0, isLit ? 'rgba(255,255,239,.92)' : 'rgba(255,255,255,.35)');
+                hl.addColorStop(1, 'rgba(255,255,255,0)');
+                c.fillStyle = hl;
+                c.fillRect(-25, 15, 27, 44);
+                c.restore();
+                c.restore();
+            }
+            function draw() {
+                const c = ctx;
+                c.setTransform(dpr, 0, 0, dpr, 0, 0);
+                c.clearRect(0, 0, W, H);
+                const ps = pts;
+                const last = ps[N]
+                  , prev = ps[N - 1];
+                const ang = Math.atan2(last.y - prev.y, last.x - prev.x);
+
+                // cast shadow on the wall behind
+                const sa = parseFloat(getComputedStyle(root).getPropertyValue('--cord-shadow')) || .2;
+                c.save();
+                c.translate(7, 11);
+                if ('filter' in c)
+                    c.filter = 'blur(3px)';
+                c.strokeStyle = `rgba(0,0,0,${sa * .8})`;
+                c.lineWidth = thick + 1;
+                c.lineCap = 'round';
+                pathThrough(c, ps);
+                c.stroke();
+                c.fillStyle = `rgba(0,0,0,${sa})`;
+                drawKnob(c, last.x, last.y, ang, true);
+                c.restore();
+
+                // brushed steel cable with a dark outer sheath and a bright highlight
+                c.lineCap = 'round';
+                c.lineJoin = 'round';
+                pathThrough(c, ps);
+                c.strokeStyle = '#050608';
+                c.lineWidth = thick + 1.8;
+                c.stroke();
+                c.strokeStyle = '#25272d';
+                c.lineWidth = thick;
+                c.stroke();
+                const sm = samples(ps, thick * 1.05);
+                c.lineWidth = Math.max(.6, thick * .24);
+                c.strokeStyle = 'rgba(0,0,0,.62)';
+                c.beginPath();
+                for (const q of sm) {
+                    if (q.y < -2)
+                        continue;
+                    const nx = -q.ty
+                      , ny = q.tx
+                      , h = thick * .5;
+                    c.moveTo(q.x - nx * h - q.tx * h * .7, q.y - ny * h - q.ty * h * .7);
+                    c.lineTo(q.x + nx * h + q.tx * h * .7, q.y + ny * h + q.ty * h * .7);
+                }
+                c.stroke();
+                // highlight along the lit side
+                c.save();
+                c.translate(-thick * .2, -thick * .05);
+                pathThrough(c, ps);
+                c.strokeStyle = 'rgba(210,214,224,.22)';
+                c.lineWidth = thick * .2;
+                c.stroke();
+                c.restore();
+
+                drawKnob(c, last.x, last.y, ang, false);
+
+                // keep the hit target on the knob
+                const kx = last.x + Math.cos(ang) * 20 * knobS
+                  , ky = last.y + Math.sin(ang) * 20 * knobS;
+                hit.style.transform = `translate(${kx}px, ${ky}px)`;
+            }
+
+            // the rope sleeps once it hangs still, so it costs nothing while you scroll; touching, pulling or resizing wakes it
+            let sleeping = false
+              , still = 0;
+            let touchedAt = 0;
+            function wake() {
+                still = 0;
+                touchedAt = performance.now();
+                if (!sleeping)
+                    return;
+                sleeping = false;
+                lastT = 0;
+                acc = 0;
+                requestAnimationFrame(loop);
+            }
+            window.__cordWake = wake;
+            function loop(now) {
+                if (!lastT)
+                    lastT = now;
+                let dt = Math.min((now - lastT) / 1000, 1 / 20);
+                lastT = now;
+                updateDrag();
+                acc += dt;
+                while (acc >= STEP) {
+                    step(STEP);
+                    acc -= STEP;
+                }
+                // left alone, the swing calms a little faster so the rope comes to rest (and stops costing anything) sooner
+                if (dropped && live && grab < 0 && now - touchedAt > 2500)
+                    for (const q of pts) {
+                        q.px += (q.x - q.px) * .06;
+                        q.py += (q.y - q.py) * .06;
+                    }
+                draw();
+                let motion = Math.abs(extV) + Math.abs(ext);
+                for (const q of pts)
+                    motion = Math.max(motion, Math.abs(q.x - q.px) + Math.abs(q.y - q.py));
+                if (dropped && live && grab < 0 && motion < .06 && reduced) {
+                    if (++still > 30) {
+                        for (const q of pts) {
+                            q.px = q.x;
+                            q.py = q.y;
+                        }
+                        sleeping = true;
+                        return;
+                    }
+                } else
+                    still = 0;
+                requestAnimationFrame(loop);
+            }
+
+            layout();
+            // start pulled up out of view; it drops in once the intro has finished
+            // folded up above the switch, out of view: it drops and swings into place after the intro
+            pts.forEach( (p, i) => {
+                p.y = p.py = -HIDDEN - i * seg * .98;
+                p.x = p.px = ax + Math.sin(i * .5) * 1.5;
+            }
+            );
+            const drop = () => {
+                dropped = true;
+                for (const p of pts) {
+                    p.px = p.x - .45;
+                }
+                // a slight sideways swing as it falls
+                setTimeout( () => {
+                    live = true;
+                }
+                , 900);
+            }
+            ;
+            if (document.body.classList.contains('ready'))
+                drop();
+            else
+                addEventListener('intro:ready', () => setTimeout(drop, 650), {
+                    once: true
+                });
+            addEventListener('resize', () => {
+                wake();
+                clearTimeout(layout._t);
+                layout._t = setTimeout( () => {
+                    layout();
+                    wake();
+                }
+                , 100);
+            }
+            );
+            new MutationObserver(wake).observe(root, {
+                attributes: true,
+                attributeFilter: ['data-mode']
+            });
+            requestAnimationFrame(loop);
+        }
+        )();
+
+        /* ---------- Instant UI Activation (No loading delay) ---------- */
+        document.body.classList.add('ready');
+        startScroll();
+        window.dispatchEvent(new Event('intro:ready'));
+
+        // Direct navigation to sections without '#' in URLs
+        (function handleDirectNavigation() {
+            const targetSection = '<%= (typeof scrollToSection !== "undefined" && scrollToSection) ? scrollToSection : "" %>';
+            if (targetSection) {
+                requestAnimationFrame(() => {
+                    const el = document.getElementById(targetSection);
+                    if (el) {
+                        setTimeout(() => {
+                            el.scrollIntoView({ behavior: 'smooth' });
+                        }, 120);
+                    }
+                });
+            }
+            const openContact = <%= (typeof openContact !== "undefined" && openContact) ? 'true' : 'false' %>;
+            if (openContact) {
+                setTimeout(() => {
+                    if (typeof openModal === 'function') openModal();
+                }, 200);
+            }
+        })();
+
+        // Click handler for section navigation in navbar (updates URL to /works or /about without '#')
+        document.addEventListener('click', e => {
+            const a = e.target.closest('[data-nav-section]');
+            if (!a) return;
+            e.preventDefault();
+            const sec = a.dataset.navSection;
+            const el = document.getElementById(sec);
+            if (el) {
+                el.scrollIntoView({ behavior: 'smooth' });
+                try {
+                    history.pushState(null, '', '/' + sec);
+                } catch (err) {}
+            }
+        });
+
+        // Click handler for Home link (scrolls to top, clean URL '/')
+        document.addEventListener('click', e => {
+            const a = e.target.closest('a[href="/"]');
+            if (!a || location.pathname !== '/') return;
+            if (e.target.closest('.backd')) return;
+            e.preventDefault();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+            try {
+                history.pushState(null, '', '/');
+            } catch (err) {}
+        });
+
+
+        /* ---------- Lenis smooth scroll ---------- */
+        try {
+            if (matchMedia('(hover: none), (pointer: coarse)').matches || root.classList.contains('lite'))
+                throw 0;
+            // phones and modest devices keep native momentum scrolling
+            const {default: Lenis} = await import('lenis');
+            lenis = new Lenis({
+                smoothWheel: true
+            });
+            window.__lenis = lenis;
+            if (!scrollEnabled)
+                lenis.stop();
+            const raf = t => {
+                lenis.raf(t);
+                requestAnimationFrame(raf);
+            }
+            ;
+            requestAnimationFrame(raf);
+        } catch (err) {/* native scrolling as fallback */
+        }
+    </script>
+    <script>
+        // my story: you scroll the chapters naturally. The dot travels the line in step with the page, the year rolls back as each
+        // chapter reaches the middle of the screen, and (on larger screens) the clock tunnel behind the year turns with your scroll.
+        ( () => {
+            const sec = document.querySelector('.story');
+            if (!sec)
+                return;
+            const line = sec.querySelector('.story__line')
+              , list = sec.querySelector('.story__list');
+            const chs = [...list.querySelectorAll('.ch')]
+              , N = chs.length;
+            const cols = [...sec.querySelectorAll('.dg__c')]
+              , when = sec.querySelector('.story__when')
+              , count = sec.querySelector('.story__count');
+            const dot = sec.querySelector('.story__dot')
+              , rail = sec.querySelector('.story__rail')
+              , cv = sec.querySelector('.story__bg')
+              , ctx = cv.getContext('2d');
+            const root = document.documentElement;
+            let shownYear = ''
+              , shown = -1;
+            const setYear = y => {
+                if (y === shownYear)
+                    return;
+                shownYear = y;
+                String(y).split('').forEach( (d, k) => cols[k] && cols[k].style.setProperty('--d', d));
+            }
+            ;
+            const show = i => {
+                if (i === shown)
+                    return;
+                shown = i;
+                chs.forEach( (c, k) => c.classList.toggle('on', k === i));
+                setYear(chs[i].dataset.y);
+                when.textContent = chs[i].dataset.when;
+                count.textContent = String(i + 1).padStart(2, '0');
+                sec.classList.toggle('is-now', i === 0);
+                sec.dataset.ch = i;
+                // the backdrop light takes this chapter's colour
+            }
+            ;
+            // ---- the tunnel ----
+            let W = 0
+              , H = 0
+              , dpr = 1
+              , rgb = '26,24,24';
+            const size = () => {
+                dpr = Math.min(2, devicePixelRatio || 1);
+                W = cv.clientWidth;
+                H = cv.clientHeight;
+                cv.width = W * dpr;
+                cv.height = H * dpr;
+            }
+            ;
+            const readRgb = () => {
+                rgb = (getComputedStyle(root).getPropertyValue('--fg-rgb') || '26,24,24').trim();
+            }
+            ;
+            new MutationObserver(readRgb).observe(root, {
+                attributes: true,
+                attributeFilter: ['data-mode']
+            });
+            const RINGS = 16
+              , GAP = 340
+              , FOCAL = 520
+              , R = 620
+              , TICKS = 60;
+            const dust = Array.from({
+                length: 70
+            }, () => ({
+                a: Math.random() * Math.PI * 2,
+                r: 120 + Math.random() * 760,
+                z: Math.random() * RINGS * GAP,
+                s: .6 + Math.random() * 1.4
+            }));
+            function tunnel(p, t) {
+                ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+                ctx.clearRect(0, 0, W, H);
+                const mob = W < 768
+                  , cx = W * .5
+                  , cy = H * .55
+                  , k = Math.min(W, H) / 900;
+                const camZ = p * (N - 1) * GAP * 1.6 + t * 18;
+                // scrolling carries you deeper into the past; it drifts a little on its own too
+                const spin = -p * Math.PI * 1.5 - t * .02;
+                // the dials wind backwards
+                const len = RINGS * GAP;
+                ctx.lineCap = 'round';
+                for (let i = 0; i < RINGS; i++) {
+                    let z = ((i * GAP - camZ) % len + len) % len + 60;
+                    // distance in front of the camera, recycled
+                    const s = FOCAL / z * k
+                      , fog = Math.min(1, Math.max(0, (z - 260) / 1100)) * Math.max(0, 1 - z / len);
+                    // fades out as it reaches you, so it never sits over the text
+                    if (fog <= .01)
+                        continue;
+                    const rr = R * s
+                      , rot = spin + i * .21;
+                    // the ring itself
+                    ctx.strokeStyle = `rgba(${rgb},${(fog * .12).toFixed(3)})`;
+                    ctx.lineWidth = Math.max(.5, 1.2 * s);
+                    ctx.beginPath();
+                    ctx.arc(cx, cy, rr, 0, Math.PI * 2);
+                    ctx.stroke();
+                    // the clock ticks, long ones on the hours: drawn as two batched paths per dial, not one stroke per tick
+                    const T = W < 768 ? 36 : TICKS
+                      , every = T / 12;
+                    for (const hour of [false, true]) {
+                        const l = (hour ? 46 : 18) * s;
+                        ctx.beginPath();
+                        for (let j = 0; j < T; j++) {
+                            if ((j % every === 0) !== hour)
+                                continue;
+                            const a = rot + j / T * Math.PI * 2
+                              , c = Math.cos(a)
+                              , d = Math.sin(a);
+                            ctx.moveTo(cx + c * (rr - l), cy + d * (rr - l));
+                            ctx.lineTo(cx + c * rr, cy + d * rr);
+                        }
+                        ctx.strokeStyle = `rgba(${rgb},${(fog * (hour ? .3 : .14)).toFixed(3)})`;
+                        ctx.lineWidth = Math.max(.5, (hour ? 3 : 1.4) * s);
+                        ctx.stroke();
+                    }
+                    // a single hand on each dial
+                    const ha = rot * 3 + i;
+                    ctx.strokeStyle = `rgba(${rgb},${(fog * .16).toFixed(3)})`;
+                    ctx.lineWidth = Math.max(.5, 2 * s);
+                    if (rr < Math.min(W, H) * .45) {
+                        ctx.beginPath();
+                        ctx.moveTo(cx, cy);
+                        ctx.lineTo(cx + Math.cos(ha) * rr * .55, cy + Math.sin(ha) * rr * .55);
+                        ctx.stroke();
+                    }
+                }
+                // dust drifting past
+                for (const q of dust) {
+                    const z = ((q.z - camZ * 1.1) % len + len) % len + 40
+                      , s = FOCAL / z * k
+                      , fog = Math.min(1, Math.max(0, (z - 300) / 900)) * Math.max(0, 1 - z / len);
+                    const a = q.a + spin * .3;
+                    ctx.fillStyle = `rgba(${rgb},${(fog * .35).toFixed(3)})`;
+                    ctx.beginPath();
+                    ctx.arc(cx + Math.cos(a) * q.r * s, cy + Math.sin(a) * q.r * s, Math.max(.4, q.s * s * 2.2), 0, Math.PI * 2);
+                    ctx.fill();
+                }
+            }
+
+            // positions along the line, measured once (and again on resize), never during a scroll
+            let firstY = 0
+              , lastY = 0
+              , endY = 0;
+            const measure = () => {
+                const mark = c => line.offsetTop * 0 + list.offsetTop + c.offsetTop + c.firstElementChild.offsetTop + 8;
+                firstY = mark(chs[0]);
+                lastY = mark(chs[N - 1]);
+                const last = chs[N - 1];
+                endY = list.offsetTop + last.offsetTop + last.offsetHeight - parseFloat(getComputedStyle(last).paddingBottom);
+                for (const el of [rail, sec.querySelector('.story__dtrack'), sec.querySelector('.story__ttrack')]) {
+                    el.style.setProperty('--r0', firstY + 'px');
+                    el.style.setProperty('--rh', (endY - firstY) + 'px');
+                }
+                if (innerWidth >= 768)
+                    size();
+            }
+            ;
+            let raf = 0
+              , p = 0
+              , dotY = null
+              , lastT = 0;
+            function update() {
+                raf = 0;
+                const lr = line.getBoundingClientRect()
+                  , mid = innerHeight * .5;
+                // the dot sits wherever the middle of the screen falls on the line
+                const y = Math.min(lastY, Math.max(firstY, mid - lr.top));
+                p = (y - firstY) / Math.max(1, lastY - firstY);
+                sec.style.setProperty('--p', p.toFixed(4));
+                sec.style.setProperty('--warm', p.toFixed(3));
+                sec.classList.toggle('at-start', p < .002);
+                // nothing travelled yet: no tail poking above the line
+                let i = 0;
+                for (let k = 0; k < N; k++)
+                    if (lr.top + list.offsetTop + chs[k].offsetTop < mid + 40)
+                        i = k;
+                show(i);
+                if (innerWidth >= 768 && !reducedM && !root.classList.contains('lite'))
+                    tunnel(p, 0);
+            }
+            const reducedM = matchMedia('(prefers-reduced-motion: reduce)').matches;
+            const q = () => {
+                if (!raf)
+                    raf = requestAnimationFrame(update);
+            }
+            ;
+            addEventListener('scroll', q, {
+                passive: true
+            });
+            addEventListener('resize', () => {
+                measure();
+                q();
+            }
+            );
+            new MutationObserver( () => {
+                readRgb();
+                q();
+            }
+            ).observe(root, {
+                attributes: true,
+                attributeFilter: ['data-mode']
+            });
+            readRgb();
+            measure();
+            show(0);
+            update();
+            document.fonts?.ready.then( () => {
+                measure();
+                q();
+            }
+            );
+            addEventListener('load', () => {
+                measure();
+                q();
+            }
+            );
+        }
+        )();
+    </script>
+    <style>
+        .ck {
+            position: fixed;
+            left: 50%;
+            bottom: max(1rem,env(safe-area-inset-bottom));
+            z-index: 90;
+            transform: translateX(-50%);
+            width: min(34rem,calc(100% - 2rem));
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: .9rem .9rem .9rem 1.2rem;
+            border-radius: 1.25rem;
+            background: #1A1818;
+            color: #E8E4E0;
+            box-shadow: 0 18px 40px -16px rgba(0,0,0,.55),0 0 0 1px rgba(232,228,224,.12);
+            font: 400 .875rem/1.45 'Onest',ui-sans-serif,system-ui,sans-serif
+        }
+
+        .ck[hidden] {
+            display: none
+        }
+
+        .ck p {
+            margin: 0;
+            flex: 1
+        }
+
+        .ck a {
+            color: inherit
+        }
+
+        .ck div {
+            display: flex;
+            gap: .5rem;
+            flex: none
+        }
+
+        .ck button {
+            height: 2.5rem;
+            padding: 0 1rem;
+            border-radius: 999px;
+            border: 1px solid rgba(232,228,224,.25);
+            background: none;
+            color: inherit;
+            font: inherit;
+            font-size: .8125rem;
+            font-weight: 600;
+            line-height: 1;
+            cursor: pointer
+        }
+
+        .ck button[data-ck="yes"] {
+            background: #E8E4E0;
+            color: #1A1818;
+            border-color: transparent
+        }
+
+        @media (max-width: 539.98px) {
+            .ck {
+                flex-direction:column;
+                align-items: stretch
+            }
+
+            .ck div button {
+                flex: 1
+            }
+        }
+    </style>
+    <div class="ck" id="ck" role="region" aria-label="Analytics choice" hidden>
+        <p>
+            May I count your visit with Google Analytics? It sets cookies. <a href="/legal/">Details</a>
+        </p>
+        <div>
+            <button type="button" data-ck="no">No thanks</button>
+            <button type="button" data-ck="yes">Allow</button>
+        </div>
+    </div>
+    <script>
+        ( () => {
+            const ID = 'G-12PNLHKGHK'
+              , K = 'anil-analytics';
+            let v = null;
+            try {
+                v = localStorage.getItem(K);
+            } catch (e) {}
+            const load = () => {
+                window.dataLayer = window.dataLayer || [];
+                window.gtag = function() {
+                    dataLayer.push(arguments);
+                }
+                ;
+                gtag('js', new Date());
+                gtag('config', ID);
+                const s = document.createElement('script');
+                s.async = true;
+                s.src = 'https://www.googletagmanager.com/gtag/js?id=' + ID;
+                document.head.appendChild(s);
+            }
+            ;
+            if (v === 'yes')
+                return load();
+            if (v === 'no')
+                return;
+            const b = document.getElementById('ck');
+            b.hidden = false;
+            b.addEventListener('click', e => {
+                const c = e.target.closest('[data-ck]');
+                if (!c)
+                    return;
+                try {
+                    localStorage.setItem(K, c.dataset.ck);
+                } catch (e) {}
+                b.hidden = true;
+                if (c.dataset.ck === 'yes')
+                    load();
+            }
+            );
+        }
+        )();
+    </script>
+
+        <!-- Project Showcase Data & Controllers (Desktop 3D Books + Mobile Motion Cards) -->
+    <script id="homeBooksData" type="application/json"><%- JSON.stringify((typeof booksData !== 'undefined' && booksData) ? booksData : []).replace(/</g, '\\u003c') %></script>
+    <script type="module">
+        import { initBooksShowcase } from '/js/books-showcase.js';
+        import { initMobileScrollCards } from '/js/scroll-cards.js';
+
+        (function setupHomeShowcases() {
+            const dataEl = document.getElementById('homeBooksData');
+            if (!dataEl) return;
+
+            let projects = [];
+            try {
+                projects = JSON.parse(dataEl.textContent);
+            } catch (err) {
+                console.error('Error parsing project data:', err);
+                return;
+            }
+
+            // 1. Desktop: Initialize 3D Books Showcase
+            const desktopMount = document.getElementById('homeBooksShowcase');
+            if (desktopMount) {
+                try {
+                    initBooksShowcase(desktopMount, {
+                        books: projects,
+                        heroTitle: 'Works',
+                        navTitle: 'Things I’ve Built',
+                        showNav: true,
+                        showDetailPanel: true,
+                        showCarousel: true
+                    });
+                } catch (err) {
+                    console.error('Error mounting Desktop 3D Books Showcase:', err);
+                }
+            }
+
+            // 2. Mobile: Initialize Scroll-Triggered Motion Cards
+            const mobileMount = document.getElementById('homeMobileCards');
+            if (mobileMount) {
+                try {
+                    initMobileScrollCards(mobileMount, {
+                        projects: projects,
+                        title: 'Things I’ve Built',
+                        subtitle: 'A closer look at my recent work'
+                    });
+                } catch (err) {
+                    console.error('Error mounting Mobile Scroll Cards:', err);
+                }
+            }
+        })();
+    </script>
+</body>
+</html>
+

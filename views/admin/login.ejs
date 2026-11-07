@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title><%= pageTitle %></title>
+    <link rel="stylesheet" href="/css/admin.css">
+    <link rel="preload" href="/fonts/onest-latin.woff2" as="font" type="font/woff2" crossorigin>
+    <style>
+        @font-face {
+            font-family: 'Onest';
+            font-style: normal;
+            font-display: swap;
+            font-weight: 100 900;
+            src: url(/fonts/onest-latin.woff2) format('woff2');
+        }
+    </style>
+</head>
+<body class="login-body">
+    <div class="login-card">
+        <div class="login-header">
+            <span class="badge badge-web" style="margin-bottom:12px;">Admin Portal</span>
+            <h1>Portfolio Control</h1>
+            <p>Sign in to manage portfolio content and settings</p>
+        </div>
+
+        <% if (typeof error !== 'undefined' && error) { %>
+            <div class="alert alert-danger"><%= error %></div>
+        <% } %>
+        <% if (typeof success !== 'undefined' && success) { %>
+            <div class="alert alert-success"><%= success %></div>
+        <% } %>
+
+        <form action="/admin/login" method="POST">
+            <div class="form-group">
+                <label for="username">Username or Email</label>
+                <input type="text" id="username" name="username" required autofocus placeholder="admin" autocomplete="username">
+            </div>
+            <div class="form-group">
+                <label for="password">Password</label>
+                <input type="password" id="password" name="password" required placeholder="••••••••" autocomplete="current-password">
+            </div>
+            <button type="submit" class="btn" style="width: 100%; margin-top: 8px;">
+                Sign In →
+            </button>
+        </form>
+
+        <div style="text-align: center; margin-top: 24px; font-size: 0.875rem;">
+            <a href="/" style="color: var(--text-muted);">← Return to Public Portfolio</a>
+        </div>
+    </div>
+</body>
+</html>
+

@@ -1,0 +1,701 @@
+<!-- ============ Clean Global Header (Strictly Matching portfolio/home.html) ============ -->
+<header class="hdr rv" id="siteHeader">
+    <div class="shell hdr__in">
+        <nav aria-label="Primary">
+            <ul class="nav">
+                <li>
+                    <a href="/" class="nav-btn<%= (typeof currentRoute !== 'undefined' && currentRoute === 'home') ? ' active' : '' %>" <%= (typeof currentRoute !== 'undefined' && currentRoute === 'home') ? 'aria-current="page"' : '' %>>
+                        <span data-h="y 0 -2|o .8 1" data-hs="320 22" data-ht="button">Home</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="/web-developer" class="nav-btn<%= (typeof currentRoute !== 'undefined' && currentRoute === 'web-developer') ? ' active' : '' %>" <%= (typeof currentRoute !== 'undefined' && currentRoute === 'web-developer') ? 'aria-current="page"' : '' %>>
+                        <span data-h="y 0 -2|o .8 1" data-hs="320 22" data-ht="button">Web Development</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="/app-developer" class="nav-btn<%= (typeof currentRoute !== 'undefined' && currentRoute === 'app-developer') ? ' active' : '' %>" <%= (typeof currentRoute !== 'undefined' && currentRoute === 'app-developer') ? 'aria-current="page"' : '' %>>
+                        <span data-h="y 0 -2|o .8 1" data-hs="320 22" data-ht="button">App Development</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="/about" class="nav-btn<%= (typeof currentRoute !== 'undefined' && currentRoute === 'about') ? ' active' : '' %>">
+                        <span data-h="y 0 -2|o .8 1" data-hs="320 22" data-ht="button">My story</span>
+                    </a>
+                </li>
+                <li>
+                    <button type="button" class="nav-btn" data-contact>
+                        <span data-h="y 0 -2|o .8 1" data-hs="320 22" data-ht="button">Contact</span>
+                    </button>
+                </li>
+            </ul>
+        </nav>
+        <div class="hdr__right">
+            <% if (typeof profile !== 'undefined' && profile && profile.resumeUrl) { %>
+            <a class="resume-btn" href="<%= profile.resumeUrl %>" download aria-label="Download resume">
+                <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12m0 0 4-4m-4 4-4-4M5 17v3h14v-3"/></svg>
+                <span>Resume</span>
+            </a>
+            <% } %>
+            <button class="chip menu-btn" id="menuBtn" style="min-height:44px;min-width:44px" aria-haspopup="dialog" aria-controls="navm" aria-label="Menu" type="button">
+                <span data-h="s 1 1.05" data-hs="320 18" data-ht=".menu-btn">
+                    <svg aria-hidden="true" focusable="false" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+                        <path d="M4 6h16M4 12h16M4 18h16"/>
+                    </svg>
+                    <span class="word">Menu</span>
+                </span>
+            </button>
+        </div>
+    </div>
+</header>
+
+<!-- ============ NavMenu Fullscreen Drawer ============ -->
+<div class="navm" id="navm" role="dialog" aria-modal="true" aria-label="Menu" hidden>
+    <div class="shell navm__top">
+        <span class="brand">
+            <svg aria-hidden="true" focusable="false" viewBox="0 0 48 48" fill="currentColor">
+                <path d="M24 2c2.2 13.8 7.9 19.6 22 22-14.1 2.4-19.8 8.2-22 22-2.2-13.8-7.9-19.6-22-22 14.1-2.4 19.8-8.2 22-22Z"/>
+            </svg>
+            <%= (typeof profile !== 'undefined' && profile && profile.fullName) || '' %>
+        </span>
+        <button class="close-btn" id="navClose" type="button" aria-label="Close menu">
+            <svg aria-hidden="true" focusable="false" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+                <path d="M4 4l16 16M20 4 4 20"/>
+            </svg>
+            Close
+        </button>
+    </div>
+    <nav class="shell navm__nav" aria-label="Menu">
+        <ul id="navList">
+            <li><a href="/" class="navm__item" style="--d:80ms"><small>01</small><span>Home</span></a></li>
+            <li><a href="/web-developer" class="navm__item" style="--d:125ms"><small>02</small><span>Web Development</span></a></li>
+            <li><a href="/app-developer" class="navm__item" style="--d:170ms"><small>03</small><span>App Development</span></a></li>
+            <li><a href="/about" class="navm__item" style="--d:215ms"><small>04</small><span>My story</span></a></li>
+            <li><button type="button" class="navm__item" data-contact style="--d:260ms"><small>05</small><span>Contact</span></button></li>
+        </ul>
+    </nav>
+    <div class="shell navm__bot">
+        <button id="navStart" data-contact style="min-height:44px" type="button">Hire me →</button>
+    </div>
+</div>
+
+<style>
+/* ==========================================================
+   Clean Header & NavMenu Styles (from portfolio/home.html)
+   ========================================================== */
+.hdr {
+    position: fixed;
+    inset-inline: 0;
+    top: 0;
+    z-index: 95;
+    transition: background .35s ease, box-shadow .35s ease, opacity .35s ease, translate .45s var(--e-soft, cubic-bezier(.16,1,.3,1));
+    --from: translateY(-14px);
+    --d: 150ms;
+    --ease: var(--e-spring, cubic-bezier(.22,1,.36,1));
+}
+
+.hdr.stuck, .hdr.scrolled {
+    background: var(--background, #E8E4E0);
+    box-shadow: 0 1px 0 rgba(var(--fg-rgb, 26,24,24), .08);
+}
+
+html[data-mode="dark"] .hdr.stuck,
+html[data-mode="dark"] .hdr.scrolled {
+    background: #1A1818;
+    box-shadow: 0 1px 0 rgba(232,228,224, .08);
+}
+
+.hdr.away {
+    opacity: 0;
+    translate: 0 -100%;
+    pointer-events: none;
+}
+
+.shell {
+    width: min(var(--container-shell, 88rem), calc(100% - 2rem));
+    margin-inline: auto;
+}
+
+/* Keep the shared header gutter consistent on pages using room.css too. */
+.hdr .shell {
+    width: 100%;
+    max-width: var(--container-shell, 88rem);
+    padding-inline: clamp(1.25rem, 6.25vw, 5.5rem);
+}
+
+.hdr__in {
+    transition: padding .35s ease;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1.5rem;
+    padding-block: 1.25rem;
+}
+
+@media (min-width: 640px) {
+    .hdr__in {
+        padding-block: 1.5rem;
+    }
+}
+
+.hdr.stuck .hdr__in, .hdr.scrolled .hdr__in {
+    padding-block: .85rem;
+}
+
+.brand {
+    display: flex;
+    align-items: center;
+    gap: .5rem;
+    font-size: 1.375rem;
+    font-weight: 600;
+    letter-spacing: -.01em;
+    color: var(--foreground, #1A1818);
+}
+
+.brand svg {
+    width: 1.5rem;
+    height: 1.5rem;
+    color: var(--accent, #6B5C5C);
+}
+
+.hdr nav {
+    flex: 1;
+    min-width: 0;
+}
+
+.nav {
+    display: none;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+@media (min-width: 1200px) {
+    .nav {
+        display: flex;
+        gap: 1.4rem;
+        font-size: 1rem;
+        white-space: nowrap;
+        align-items: center;
+    }
+    .menu-btn {
+        display: none !important;
+    }
+}
+
+@media (max-width: 1199.98px) {
+    .hdr nav {
+        display: none;
+    }
+    .hdr__right {
+        flex: 1;
+        justify-content: space-between;
+    }
+    .menu-btn {
+        order: 0;
+    }
+    .resume-btn {
+        order: 1;
+        margin-left: auto;
+    }
+}
+
+.nav-btn, .nav button {
+    display: block;
+    background: none;
+    border: none;
+    padding: 0;
+    color: inherit;
+    font: inherit;
+    cursor: pointer;
+    text-decoration: none;
+}
+
+.nav-btn > span, .nav button > span {
+    display: inline-flex;
+    align-items: center;
+    gap: .25rem;
+    opacity: .8;
+    transition: opacity .2s;
+}
+
+.nav-btn:hover > span, .nav button:hover > span,
+.nav-btn.active > span {
+    opacity: 1;
+}
+
+.hdr__right {
+    display: flex;
+    align-items: center;
+    gap: .75rem;
+}
+
+.resume-btn {
+    position: relative;
+    isolation: isolate;
+    display: inline-flex;
+    min-height: 44px;
+    align-items: center;
+    justify-content: center;
+    gap: .45rem;
+    overflow: hidden;
+    padding: 0 .95rem;
+    border: 1px solid color-mix(in srgb, var(--accent) 48%, transparent);
+    border-radius: 999px;
+    background: color-mix(in srgb, var(--accent) 13%, var(--background));
+    color: var(--foreground);
+    font-size: .78rem;
+    font-weight: 700;
+    letter-spacing: .055em;
+    text-decoration: none;
+    text-transform: uppercase;
+    white-space: nowrap;
+    box-shadow: 0 4px 14px rgba(0,0,0,.07);
+    transition: transform .25s var(--e-spring), box-shadow .25s ease, background .25s ease;
+}
+.resume-btn::before {
+    position: absolute;
+    z-index: -1;
+    inset: 0;
+    content: "";
+    background: linear-gradient(110deg, transparent 20%, color-mix(in srgb, var(--accent) 26%, transparent) 48%, transparent 76%);
+    transform: translateX(-120%);
+    animation: resume-shine 3.6s ease-in-out infinite;
+}
+.resume-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 22px rgba(0,0,0,.13) }
+.resume-btn svg { width: 1rem; height: 1rem; flex: none }
+@keyframes resume-shine { 0%, 55% { transform: translateX(-120%) } 78%, 100% { transform: translateX(120%) } }
+@media (max-width: 420px) { .resume-btn { min-height: 40px; padding-inline: .68rem; font-size: .68rem; gap: .3rem } .resume-btn svg { width: .9rem; height: .9rem } }
+@media (prefers-reduced-motion: reduce) { .resume-btn::before { animation: none } .resume-btn { transition: none } }
+
+.chip {
+    border: 1px solid var(--chip-line, rgba(26,24,24,.12));
+    background: var(--chip-bg, rgba(255,255,255,.6));
+    -webkit-backdrop-filter: blur(8px);
+    backdrop-filter: blur(8px);
+    border-radius: var(--radius-control, .875rem);
+    color: inherit;
+    font: inherit;
+}
+
+html[data-mode="dark"] .chip {
+    border-color: rgba(232,228,224,.15);
+    background: rgba(26,24,24,.75);
+}
+
+.clock {
+    display: flex;
+    flex: none;
+    white-space: nowrap;
+    align-items: center;
+    gap: .75rem;
+    padding: .6rem .9rem;
+    font-size: .875rem;
+    color: rgba(var(--fg-rgb, 26,24,24), .7);
+}
+
+html[data-mode="dark"] .clock {
+    color: rgba(232,228,224, .7);
+}
+
+.clock__ds {
+    display: none;
+    font-weight: 500;
+}
+
+@media (max-width: 767.98px) {
+    .clock {
+        gap: .5rem;
+        padding: .55rem .8rem;
+        font-size: .8125rem;
+    }
+    .clock__date, .clock__sep {
+        display: none;
+    }
+    .clock .clock__time {
+        min-width: 0;
+    }
+}
+
+.clock__lbl {
+    color: rgba(var(--fg-rgb, 26,24,24), .66);
+}
+html[data-mode="dark"] .clock__lbl {
+    color: rgba(232,228,224, .66);
+}
+
+.clock__time {
+    min-width: 4rem;
+    font-weight: 500;
+    color: var(--foreground, #1A1818);
+}
+html[data-mode="dark"] .clock__time {
+    color: #E8E4E0;
+}
+
+.clock__sep {
+    color: rgba(var(--fg-rgb, 26,24,24), .3);
+}
+
+.clock__date {
+    font-weight: 500;
+}
+
+.menu-btn {
+    transition: background .25s;
+    cursor: pointer;
+    border: 1px solid var(--chip-line, rgba(26,24,24,.12));
+    background: var(--chip-bg, rgba(255,255,255,.6));
+    border-radius: var(--radius-control, .875rem);
+}
+
+.menu-btn:hover {
+    background: var(--chip-bg-h, rgba(255,255,255,.9));
+}
+html[data-mode="dark"] .menu-btn:hover {
+    background: rgba(45,41,41,.9);
+}
+
+.menu-btn > span {
+    display: flex;
+    align-items: center;
+    gap: .5rem;
+    padding: .6rem 1.1rem;
+    font-size: .875rem;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: .05em;
+    color: var(--foreground, #1A1818);
+}
+html[data-mode="dark"] .menu-btn > span {
+    color: #E8E4E0;
+}
+
+.menu-btn svg {
+    width: 1rem;
+    height: 1rem;
+}
+
+.menu-btn .word {
+    display: none;
+}
+
+@media (min-width: 640px) {
+    .menu-btn .word {
+        display: inline;
+    }
+}
+
+/* ---------- Fullscreen NavMenu Drawer ---------- */
+.navm {
+    position: fixed;
+    inset: 0;
+    z-index: 120;
+    display: flex;
+    flex-direction: column;
+    background: var(--ink, #1A1818);
+    color: #fff;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity .45s var(--e-spring, cubic-bezier(.22,1,.36,1));
+}
+
+.navm.open {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+.navm__top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-block: 1.25rem;
+}
+
+@media (min-width: 640px) {
+    .navm__top {
+        padding-block: 1.5rem;
+    }
+}
+
+.navm__top .brand {
+    color: #fff;
+}
+
+.navm__top .brand svg {
+    color: var(--accent-from, #C4B0B0);
+}
+
+.close-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: .5rem;
+    border: 1px solid rgba(255,255,255,.15);
+    background: transparent;
+    border-radius: var(--radius-control, .875rem);
+    padding: .5rem 1rem;
+    font-size: .75rem;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: .05em;
+    color: rgba(255,255,255,.7);
+    cursor: pointer;
+    transition: border-color .25s, color .25s;
+}
+
+.close-btn:hover {
+    border-color: rgba(255,255,255,.4);
+    color: #fff;
+}
+
+.close-btn svg {
+    width: .875rem;
+    height: .875rem;
+}
+
+.navm__nav {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.navm__nav ul {
+    display: flex;
+    flex-direction: column;
+    gap: .25rem;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.navm__item {
+    display: flex;
+    align-items: baseline;
+    gap: 1rem;
+    width: 100%;
+    padding-block: .5rem;
+    text-align: left;
+    font-size: 2.25rem;
+    font-weight: 600;
+    letter-spacing: -.02em;
+    transform: translateY(1rem);
+    opacity: 0;
+    transition: all .5s ease-out;
+    transition-delay: var(--d, 0ms);
+    background: none;
+    border: none;
+    color: inherit;
+    font-family: inherit;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.navm.open .navm__item {
+    transform: none;
+    opacity: 1;
+}
+
+.navm__item small {
+    font-size: 1rem;
+    font-weight: 400;
+    color: rgba(255,255,255,.3);
+    transition: color .3s;
+}
+
+.navm__item span {
+    color: rgba(255,255,255,.7);
+    transition: color .3s;
+}
+
+.navm__item:hover small {
+    color: var(--accent-from, #C4B0B0);
+}
+
+.navm__item:hover span {
+    color: #fff;
+}
+
+@media (min-width: 640px) {
+    .navm__item {
+        font-size: 3.75rem;
+    }
+}
+
+.navm__bot {
+    display: flex;
+    flex-direction: column;
+    gap: .75rem;
+    border-top: 1px solid rgba(255,255,255,.1);
+    padding-block: 1.5rem;
+    font-size: .75rem;
+    text-transform: uppercase;
+    letter-spacing: .025em;
+    color: rgba(255,255,255,.45);
+}
+
+@media (min-width: 640px) {
+    .navm__bot {
+        flex-direction: row;
+        justify-content: space-between;
+        align-items: center;
+    }
+}
+
+.navm__bot button {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font: inherit;
+    text-align: left;
+    text-transform: uppercase;
+    letter-spacing: .025em;
+    color: rgba(255,255,255,.7);
+    transition: color .2s;
+}
+
+.navm__bot button:hover {
+    color: #fff;
+    text-decoration: underline;
+}
+</style>
+
+<script>
+(function initCleanHeader() {
+    const menuBtn = document.getElementById('menuBtn');
+    const navm = document.getElementById('navm');
+    const navClose = document.getElementById('navClose');
+    const header = document.getElementById('siteHeader');
+
+    // 1. Nav Menu Drawer Open / Close
+    function openNav(e) {
+        if (e) { e.preventDefault(); e.stopPropagation(); }
+        if (!navm) return;
+        navm.hidden = false;
+        requestAnimationFrame(() => {
+            navm.classList.add('open');
+            if (menuBtn) menuBtn.setAttribute('aria-expanded', 'true');
+            document.body.style.overflow = 'hidden';
+            if (navClose) navClose.focus();
+        });
+    }
+
+    function closeNav(after) {
+        if (!navm) return;
+        navm.classList.remove('open');
+        if (menuBtn) {
+            menuBtn.setAttribute('aria-expanded', 'false');
+            menuBtn.focus();
+        }
+        setTimeout(() => {
+            navm.hidden = true;
+            document.body.style.overflow = '';
+            if (typeof after === 'function') after();
+        }, 460);
+    }
+
+    if (menuBtn) {
+        menuBtn.addEventListener('click', openNav);
+    }
+    if (navClose) {
+        navClose.addEventListener('click', () => closeNav());
+    }
+
+    // Close on navigation click inside drawer
+    if (navm) {
+        navm.addEventListener('click', (e) => {
+            const link = e.target.closest('a');
+            const contactBtn = e.target.closest('[data-contact]');
+            if (link) {
+                closeNav();
+            } else if (contactBtn) {
+                closeNav(() => openModal());
+            }
+        });
+    }
+
+    // Escape key
+    window.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && navm && navm.classList.contains('open')) {
+            closeNav();
+        }
+    });
+
+    // 3. Contact Modal Helper & Scroll Unlock Protection
+    function unlockScroll() {
+        document.body.style.removeProperty('overflow');
+        document.body.style.removeProperty('position');
+        document.documentElement.style.removeProperty('overflow');
+        document.documentElement.style.removeProperty('position');
+        document.documentElement.style.removeProperty('height');
+        const l = window.__lenis || window.lenis;
+        if (l && typeof l.start === 'function') {
+            try { l.start(); } catch(e) {}
+        }
+    }
+    window.unlockScroll = unlockScroll;
+
+    function openModal() {
+        const modal = document.getElementById('modal');
+        if (modal) {
+            modal.hidden = false;
+            modal.classList.add('on');
+            document.body.style.overflow = 'hidden';
+            const firstInput = modal.querySelector('input, textarea, button');
+            if (firstInput) setTimeout(() => firstInput.focus(), 80);
+        } else {
+            window.location.href = '/about#contact';
+        }
+    }
+    window.openModal = openModal;
+
+    const modalEl = document.getElementById('modal');
+    if (modalEl) {
+        modalEl.addEventListener('click', (e) => {
+            if (e.target === modalEl || e.target.closest('#mClose, #mDone, .close-btn')) {
+                modalEl.classList.remove('on', 'open');
+                modalEl.hidden = true;
+                setTimeout(unlockScroll, 80);
+            }
+        });
+    }
+
+    // Protection against stuck scroll when returning from external demo links, bfcache, or tab refocus
+    window.addEventListener('pageshow', () => {
+        unlockScroll();
+        if (modalEl) {
+            modalEl.classList.remove('on', 'open');
+            modalEl.hidden = true;
+        }
+    });
+
+    window.addEventListener('focus', () => {
+        if (!modalEl || modalEl.hidden) {
+            unlockScroll();
+        }
+    });
+
+    document.addEventListener('visibilitychange', () => {
+        if (!document.hidden && (!modalEl || modalEl.hidden)) {
+            unlockScroll();
+        }
+    });
+
+    document.addEventListener('click', (e) => {
+        const b = e.target.closest('[data-contact]');
+        if (b && (!navm || !navm.contains(b))) {
+            e.preventDefault();
+            openModal();
+        }
+    });
+
+    // 4. Header Scroll Stuck Indicator
+    if (header) {
+        window.addEventListener('scroll', () => {
+            const stuck = window.scrollY > 20;
+            header.classList.toggle('stuck', stuck);
+            header.classList.toggle('scrolled', stuck);
+        }, { passive: true });
+    }
+})();
+</script>

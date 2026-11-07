@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <%- include('../partials/head', { isRoom: true }) %>
+</head>
+<body>
+    <div class="glow" aria-hidden="true"></div>
+    <%- include('../partials/header', { isRoom: true }) %>
+
+    <main class="wrap">
+        <div class="top">
+            <a class="chip" href="/">← Back to Home</a>
+        </div>
+        <section class="intro">
+            <h1>Web Development</h1>
+            <div>
+                <p>Web applications, community platforms and dynamic websites, built end to end using Node.js, Express.js, MongoDB, JavaScript and modern UI: from responsive layouts and database architecture to REST APIs, authentication and deployment.</p>
+            </div>
+        </section>
+
+        <!-- ============ 3D Books Showcase ============ -->
+        <section class="books-showcase-section" aria-label="3D & Mobile Web Projects">
+            <!-- Desktop: 3D Books Showcase -->
+            <div id="webBooksShowcase" class="books-showcase-mount bs-desktop-only"></div>
+            <!-- Mobile: Scroll-Triggered Cards -->
+            <div id="webMobileCards" class="mobile-scroll-cards bs-mobile-only" aria-label="Mobile Web Projects"></div>
+        </section>
+        <section class="stack" id="stack" aria-label="Projects">
+            <% if (projects && projects.length > 0) { %>
+                <% projects.forEach((p, i) => { %>
+                    <article class="card seen on<%= i % 2 ? ' flip' : '' %>" style="--i:<%= i %>" aria-labelledby="p<%= i %>">
+                        <div class="card__in">
+                            <div class="card__info">
+                                <p class="card__meta">
+                                    <span><%= p.kind || 'Web Application' %></span>
+                                </p>
+                                <h2 id="p<%= i %>"><%= p.title %></h2>
+                                <p class="sub"><%= p.subTitle || '' %></p>
+                                <p class="desc"><%= p.desc || '' %></p>
+                                <% if (p.tags && p.tags.length > 0) { %>
+                                    <ul class="tags">
+                                        <% p.tags.forEach(t => { %>
+                                            <li><%= t %></li>
+                                        <% }) %>
+                                    </ul>
+                                <% } %>
+                                <% if (p.url) { %>
+                                    <a class="live" href="<%= p.url %>" target="_blank" rel="noopener noreferrer">
+                                        Visit live site 
+                                        <svg aria-hidden="true" focusable="false" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                            <path d="M7 17 17 7M8 7h9v9"/>
+                                        </svg>
+                                    </a>
+                                <% } else { %>
+                                    <span class="note"><%= p.note || 'Full-stack application build' %></span>
+                                <% } %>
+                            </div>
+                            <div class="stage" aria-hidden="true">
+                                <div class="mon">
+                                    <div class="mon__body">
+                                        <div class="mon__screen<%= p.video ? ' vid' : '' %>" style="--ar:<%= p.ar || '1280 / 732' %>">
+                                            <% if (p.video) { %>
+                                                <video muted loop playsinline preload="metadata" poster="<%= p.poster ? (p.poster.startsWith('/') ? p.poster : '/images/' + p.poster) : '/images/project-2.webp' %>" src="<%= p.video.startsWith('/') ? p.video : '/images/' + p.video %>" style="background:<%= p.bg || '#1A1818' %>;object-fit:contain"></video>
+                                            <% } else if (p.shot || p.poster) { %>
+                                                <img src="<%= (p.shot || p.poster).startsWith('/') ? (p.shot || p.poster) : '/images/' + (p.shot || p.poster) %>" alt="" loading="<%= i < 1 ? 'eager' : 'lazy' %>" style="background:<%= p.bg || '#1A1818' %>;object-fit:contain;width:100%;height:100%">
+                                            <% } else { %>
+                                                <img src="/images/1-zerodha.webp" alt="" loading="<%= i < 1 ? 'eager' : 'lazy' %>" style="background:<%= p.bg || '#1A1818' %>;object-fit:contain;width:100%;height:100%">
+                                            <% } %>
+                                        </div>
+                                    </div>
+                                    <div class="mon__neck"></div>
+                                    <div class="mon__foot"></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card__dim"></div>
+                    </article>
+                <% }) %>
+            <% } else { %>
+                <p style="text-align:center;padding:4rem 1rem;color:var(--fg);opacity:.7;">No web development projects published yet.</p>
+            <% } %>
+        </section>
+    </main>
+
+    <div class="sfw">
+        <%- include('../partials/footer') %>
+    </div>
+
+    <%- include('../partials/contact_modal') %>
+
+    <button class="totop" id="toTopBtn" aria-label="Back to top">
+        <svg class="ring" viewBox="0 0 52 52" aria-hidden="true">
+            <circle cx="26" cy="26" r="24"/>
+        </svg>
+        <svg class="ar" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M12 19V5M6 11l6-6 6 6"/>
+        </svg>
+        <span class="lbl">Back to top</span>
+    </button>
+
+    <script>
+        window.__live = true;
+
+        // Mobile drawer menu interactions
+        (function initMenu() {
+            const rn = document.getElementById('rn');
+            const menu = document.getElementById('rnMenu');
+            const panel = document.getElementById('rnPanel');
+            const pclose = document.getElementById('rnClose');
+            if (menu && panel && rn) {
+                const setMenu = (open) => {
+                    rn.classList.toggle('open', open);
+                    menu.setAttribute('aria-expanded', open ? 'true' : 'false');
+                    document.documentElement.classList.toggle('rn-lock', open);
+                    if (open && pclose) setTimeout(() => pclose.focus(), 60);
+                };
+                menu.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    setMenu(!rn.classList.contains('open'));
+                });
+                if (pclose) pclose.addEventListener('click', () => setMenu(false));
+                panel.addEventListener('click', (e) => {
+                    if (e.target.closest('a') || e.target.closest('button[data-contact]')) {
+                        setMenu(false);
+                    }
+                });
+                document.addEventListener('keydown', (e) => {
+                    if (e.key === 'Escape' && rn.classList.contains('open')) {
+                        setMenu(false);
+                    }
+                });
+            }
+        })();
+
+        // Card and video interactions
+        (function initCards() {
+            const cards = [...document.querySelectorAll('.card')];
+            cards.forEach(c => c.classList.add('seen', 'on'));
+
+            // Auto-play videos when they come into viewport
+            const vids = cards.map(c => c.querySelector('video')).filter(Boolean);
+            if (vids.length > 0 && 'IntersectionObserver' in window) {
+                const vObserver = new IntersectionObserver((entries) => {
+                    entries.forEach(entry => {
+                        const video = entry.target;
+                        if (entry.isIntersecting) {
+                            video.play().catch(() => {});
+                        } else {
+                            video.pause();
+                        }
+                    });
+                }, { threshold: 0.25 });
+                vids.forEach(v => vObserver.observe(v));
+            }
+        })();
+
+        // Back to top button & sticky navbar update
+        (function initScroll() {
+            const rn = document.getElementById('rn');
+            const toTop = document.getElementById('toTopBtn');
+            const onScroll = () => {
+                const y = window.scrollY || window.pageYOffset;
+                if (rn) rn.classList.toggle('stuck', y > 10);
+                if (toTop) toTop.classList.toggle('show', y > 400);
+            };
+            window.addEventListener('scroll', onScroll, { passive: true });
+            onScroll();
+
+            if (toTop) {
+                toTop.addEventListener('click', () => {
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                });
+            }
+        })();
+
+        // Contact Modal trigger
+        (function initContactModal() {
+            document.addEventListener('click', e => {
+                const btn = e.target.closest('[data-contact]');
+                if (!btn) return;
+                e.preventDefault();
+                const modal = document.getElementById('modal');
+                if (modal) modal.hidden = false;
+            });
+            const modalClose = document.getElementById('modalClose');
+            if (modalClose) {
+                modalClose.addEventListener('click', () => {
+                    const modal = document.getElementById('modal');
+                    if (modal) modal.hidden = true;
+                });
+            }
+        })();
+
+        // Press 'F' for fullscreen toggle
+        document.addEventListener('keydown', e => {
+            if ((e.key === 'f' || e.key === 'F') && !e.metaKey && !e.ctrlKey && !e.altKey) {
+                const tag = document.activeElement ? document.activeElement.tagName : '';
+                if (/^(INPUT|TEXTAREA|SELECT)$/.test(tag)) return;
+                e.preventDefault();
+                if (document.fullscreenElement) {
+                    document.exitFullscreen().catch(() => {});
+                } else {
+                    document.documentElement.requestFullscreen().catch(() => {});
+                }
+            }
+        });
+    </script>
+
+    <!-- 3D Books Showcase Data & Controller -->
+    <script id="webBooksData" type="application/json"><%- JSON.stringify((typeof booksData !== 'undefined' && booksData) ? booksData : []).replace(/</g, '\\u003c') %></script>
+    <script type="module">
+        import { initBooksShowcase } from '/js/books-showcase.js';
+        import { initMobileScrollCards } from '/js/scroll-cards.js';
+
+        (function setupShowcases() {
+            const dataEl = document.getElementById('webBooksData');
+            if (!dataEl) return;
+
+            let projects = [];
+            try {
+                projects = JSON.parse(dataEl.textContent);
+            } catch (err) {
+                console.error('Error parsing project data:', err);
+                return;
+            }
+
+            // 1. Desktop: 3D Books Showcase
+            const desktopMount = document.getElementById('webBooksShowcase');
+            if (desktopMount) {
+                try {
+                    initBooksShowcase(desktopMount, {
+                        books: projects,
+                        heroTitle: 'Web',
+                        navTitle: 'Web Projects',
+                        showNav: true,
+                        showDetailPanel: true,
+                        showCarousel: true
+                    });
+                } catch (err) {
+                    console.error('Error mounting Desktop 3D Books Showcase:', err);
+                }
+            }
+
+            // 2. Mobile: Scroll-Triggered Cards
+            const mobileMount = document.getElementById('webMobileCards');
+            if (mobileMount) {
+                try {
+                    initMobileScrollCards(mobileMount, {
+                        projects: projects,
+                        title: 'Web Projects',
+                        subtitle: 'Scroll to explore web projects'
+                    });
+                } catch (err) {
+                    console.error('Error mounting Mobile Scroll Cards:', err);
+                }
+            }
+        })();
+    </script>
+</body>
+</html>

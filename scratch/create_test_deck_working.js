@@ -1,0 +1,303 @@
+const fs = require('fs');
+
+const testHtml = `
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sticky Stacking Deck</title>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { background: #0b0e17; color: #fff; font-family: -apple-system, sans-serif; overflow-x: hidden; }
+
+.section-before {
+  height: 50vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #141824;
+  font-size: 1.2rem;
+  color: #94a3b8;
+}
+
+.m-deck-section {
+  position: relative;
+  width: 100%;
+  max-width: 440px;
+  margin: 0 auto;
+  padding: 0 16px;
+}
+
+/* Pinned Background Splash */
+.m-deck-bg-pin {
+  position: sticky;
+  top: 14vh;
+  z-index: 1;
+  width: min(380px, 94vw);
+  height: 480px;
+  margin: 0 auto;
+  pointer-events: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: opacity 0.5s ease;
+}
+
+.m-deck-splash {
+  width: 100%;
+  height: 100%;
+  filter: drop-shadow(0 20px 40px rgba(0,0,0,0.5));
+}
+
+.m-deck-splash path {
+  transition: fill 0.6s ease;
+}
+
+/* Cards List */
+.m-deck-cards-list {
+  position: relative;
+  z-index: 5;
+  margin-top: -480px; /* Pulls cards over the sticky background */
+}
+
+.m-deck-card-item {
+  position: sticky;
+  top: 15vh;
+  height: 460px;
+  margin-bottom: 50vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: calc(10 + var(--i));
+  will-change: transform, opacity, filter;
+  transition: transform 0.4s cubic-bezier(0.2, 0.8, 0.2, 1), filter 0.4s ease, opacity 0.4s ease;
+}
+
+.m-deck-card-item:last-child {
+  margin-bottom: 120px;
+}
+
+/* Card Styling */
+.m-card {
+  position: relative;
+  width: min(324px, calc(100vw - 36px));
+  height: 440px;
+  border-radius: 24px;
+  background: #171b2b;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.6), 0 0 0 1px rgba(255, 255, 255, 0.05);
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  transform: rotate(var(--rot, 0deg));
+}
+
+.m-card__top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+.m-card__cat {
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: #38bdf8;
+  background: rgba(56, 189, 248, 0.12);
+  padding: 3px 10px;
+  border-radius: 999px;
+  border: 1px solid rgba(56, 189, 248, 0.25);
+}
+.m-card__year {
+  font-size: 0.8rem;
+  color: rgba(255, 255, 255, 0.4);
+}
+.m-card__media {
+  width: 100%;
+  height: 180px;
+  border-radius: 14px;
+  background: #0f1320;
+  overflow: hidden;
+  margin-bottom: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+.m-card__media img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.m-card__title {
+  font-size: 1.2rem;
+  font-weight: 700;
+  margin-bottom: 6px;
+  color: #fff;
+}
+.m-card__desc {
+  font-size: 0.8rem;
+  color: #94a3b8;
+  line-height: 1.4;
+  margin-bottom: 10px;
+}
+.m-card__tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+  margin-bottom: 14px;
+}
+.m-card__tag {
+  font-size: 0.68rem;
+  padding: 2px 7px;
+  background: rgba(255, 255, 255, 0.06);
+  border-radius: 5px;
+  color: #c9d0ee;
+}
+.m-card__actions {
+  margin-top: auto;
+  display: flex;
+  gap: 8px;
+}
+.m-card__btn {
+  flex: 1;
+  height: 38px;
+  border-radius: 999px;
+  border: none;
+  font-size: 0.82rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  text-decoration: none;
+}
+.m-card__btn--pri {
+  background: #fff;
+  color: #0f172a;
+}
+.m-card__btn--sec {
+  background: rgba(255, 255, 255, 0.1);
+  color: #fff;
+}
+</style>
+</head>
+<body>
+  <div class="section-before">Scroll down to see the Sticky Deck</div>
+
+  <div class="m-deck-section" id="mDeckSection">
+    <div class="m-deck-bg-pin" id="mDeckBgPin">
+      <svg class="m-deck-splash" viewBox="0 0 500 450" preserveAspectRatio="none">
+        <defs>
+          <linearGradient id="splashGrad" x1="0%" y1="100%" x2="100%" y2="0%">
+            <stop id="gradStop0" offset="0%" stop-color="#f43f5e" />
+            <stop id="gradStop1" offset="100%" stop-color="#fb923c" />
+          </linearGradient>
+        </defs>
+        <path fill="url(#splashGrad)" d="M 0 303.5 C 0 292.454 8.995 285.101 20 283.5 L 460 219.5 C 470.085 218.033 480 228.454 480 239.5 L 500 430 C 500 441.046 491.046 450 480 450 L 20 450 C 8.954 450 0 441.046 0 430 Z" />
+      </svg>
+    </div>
+
+    <div class="m-deck-cards-list">
+      <div class="m-deck-card-item" style="--i:0">
+        <div class="m-card" style="--rot:-4.5deg">
+          <div class="m-card__top"><span class="m-card__cat">Web Application</span><span class="m-card__year">2025</span></div>
+          <div class="m-card__media"><div style="color:#f43f5e;font-weight:700">Project 1 Media</div></div>
+          <h3 class="m-card__title">Nishad Aarakshan Sankalp</h3>
+          <p class="m-card__desc">Community movement platform with member registration & real-time updates.</p>
+          <div class="m-card__tags"><span class="m-card__tag">Node.js</span><span class="m-card__tag">MongoDB</span></div>
+          <div class="m-card__actions"><a class="m-card__btn m-card__btn--pri">Live Demo →</a><button class="m-card__btn m-card__btn--sec">Contact</button></div>
+        </div>
+      </div>
+
+      <div class="m-deck-card-item" style="--i:1">
+        <div class="m-card" style="--rot:4deg">
+          <div class="m-card__top"><span class="m-card__cat">Web Portal</span><span class="m-card__year">2025</span></div>
+          <div class="m-card__media"><div style="color:#38bdf8;font-weight:700">Project 2 Media</div></div>
+          <h3 class="m-card__title">RIDTech.in — Apna Naukari</h3>
+          <p class="m-card__desc">Modern job portal connecting job seekers with localized vacancies.</p>
+          <div class="m-card__tags"><span class="m-card__tag">Node.js</span><span class="m-card__tag">Express</span></div>
+          <div class="m-card__actions"><a class="m-card__btn m-card__btn--pri">Live Demo →</a><button class="m-card__btn m-card__btn--sec">Contact</button></div>
+        </div>
+      </div>
+
+      <div class="m-deck-card-item" style="--i:2">
+        <div class="m-card" style="--rot:-3deg">
+          <div class="m-card__top"><span class="m-card__cat">Mobile App</span><span class="m-card__year">2024</span></div>
+          <div class="m-card__media"><div style="color:#ec4899;font-weight:700">Project 3 Media</div></div>
+          <h3 class="m-card__title">VIP Party Mobile App</h3>
+          <p class="m-card__desc">Full-featured mobile application built with React Native & Expo.</p>
+          <div class="m-card__tags"><span class="m-card__tag">React Native</span><span class="m-card__tag">Expo</span></div>
+          <div class="m-card__actions"><a class="m-card__btn m-card__btn--pri">Live Demo →</a><button class="m-card__btn m-card__btn--sec">Contact</button></div>
+        </div>
+      </div>
+
+      <div class="m-deck-card-item" style="--i:3">
+        <div class="m-card" style="--rot:3deg">
+          <div class="m-card__top"><span class="m-card__cat">Management CRM</span><span class="m-card__year">2024</span></div>
+          <div class="m-card__media"><div style="color:#10b981;font-weight:700">Project 4 Media</div></div>
+          <h3 class="m-card__title">Political Party Management</h3>
+          <p class="m-card__desc">Comprehensive ERP and cadre management system with multi-tier roles.</p>
+          <div class="m-card__tags"><span class="m-card__tag">Node.js</span><span class="m-card__tag">MongoDB</span></div>
+          <div class="m-card__actions"><a class="m-card__btn m-card__btn--pri">Live Demo →</a><button class="m-card__btn m-card__btn--sec">Contact</button></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section-before">Doors Section / Next Section</div>
+
+  <script>
+    const gradients = [
+      ['#f43f5e', '#fb923c'],
+      ['#0284c7', '#38bdf8'],
+      ['#8b5cf6', '#ec4899'],
+      ['#10b981', '#06b6d4']
+    ];
+
+    const items = document.querySelectorAll('.m-deck-card-item');
+    const stop0 = document.getElementById('gradStop0');
+    const stop1 = document.getElementById('gradStop1');
+
+    window.addEventListener('scroll', () => {
+      const vh = window.innerHeight;
+      const targetTop = vh * 0.16;
+
+      let activeIndex = 0;
+      items.forEach((item, i) => {
+        const rect = item.getBoundingClientRect();
+        // Distance from sticky top
+        const dist = rect.top - targetTop;
+
+        if (dist <= 10) {
+          activeIndex = i;
+        }
+
+        // Depth scale effect for covered cards
+        if (i < activeIndex) {
+          const depth = activeIndex - i;
+          const scale = Math.max(0.85, 1 - depth * 0.045);
+          const yOff = depth * -6;
+          const dim = Math.max(0.65, 1 - depth * 0.15);
+          item.querySelector('.m-card').style.transform = \`translateY(\${yOff}px) scale(\${scale}) rotate(var(--rot))\`;
+          item.querySelector('.m-card').style.filter = \`brightness(\${dim})\`;
+        } else {
+          item.querySelector('.m-card').style.transform = \`scale(1) rotate(var(--rot))\`;
+          item.querySelector('.m-card').style.filter = 'brightness(1)';
+        }
+      });
+
+      if (gradients[activeIndex]) {
+        stop0.setAttribute('stop-color', gradients[activeIndex][0]);
+        stop1.setAttribute('stop-color', gradients[activeIndex][1]);
+      }
+    }, { passive: true });
+  </script>
+</body>
+</html>
+`;
+
+fs.writeFileSync('scratch/test_deck_working.html', testHtml);
+console.log("Written scratch/test_deck_working.html");
+

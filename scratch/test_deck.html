@@ -1,0 +1,91 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+body { margin: 0; background: #0f121d; color: #fff; font-family: sans-serif; padding-bottom: 500px; }
+.spacer { height: 60vh; background: #1a1e2d; display: flex; align-items: center; justify-content: center; }
+
+.m-deck-section {
+  position: relative;
+  width: 100%;
+  max-width: 440px;
+  margin: 0 auto;
+}
+
+.m-deck-bg-pin {
+  position: sticky;
+  top: 15vh;
+  z-index: 1;
+  width: min(380px, 94vw);
+  height: 480px;
+  margin: 0 auto;
+  pointer-events: none;
+  background: radial-gradient(circle at 50% 50%, rgba(244,63,94,0.3) 0%, transparent 70%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.m-deck-bg-pin svg {
+  width: 100%;
+  height: 100%;
+  filter: drop-shadow(0 16px 32px rgba(0,0,0,0.4));
+}
+
+.m-deck-cards-list {
+  position: relative;
+  z-index: 5;
+  margin-top: -480px;
+}
+
+.m-deck-card-item {
+  position: sticky;
+  top: 16vh;
+  height: 460px;
+  margin-bottom: 60vh;
+  display: flex;
+  justify-content: center;
+}
+
+.m-deck-card-item:last-child {
+  margin-bottom: 100px;
+}
+
+.card {
+  width: 320px;
+  height: 440px;
+  border-radius: 24px;
+  background: #181d2d;
+  border: 1px solid rgba(255,255,255,0.15);
+  box-shadow: 0 20px 50px rgba(0,0,0,0.6);
+  padding: 20px;
+  box-sizing: border-box;
+}
+</style>
+</head>
+<body>
+  <div class="spacer">Scroll down to see the pinned deck</div>
+  <div class="m-deck-section">
+    <div class="m-deck-bg-pin">
+      <svg viewBox="0 0 500 450" preserveAspectRatio="none">
+        <defs>
+          <linearGradient id="splashGrad" x1="0" y1="1" x2="1" y2="0">
+            <stop offset="0%" stop-color="#f43f5e" />
+            <stop offset="100%" stop-color="#fb923c" />
+          </linearGradient>
+        </defs>
+        <path fill="url(#splashGrad)" d="M 0 303.5 C 0 292.454 8.995 285.101 20 283.5 L 460 219.5 C 470.085 218.033 480 228.454 480 239.5 L 500 430 C 500 441.046 491.046 450 480 450 L 20 450 C 8.954 450 0 441.046 0 430 Z" />
+      </svg>
+    </div>
+    <div class="m-deck-cards-list">
+      <div class="m-deck-card-item" style="--i:0"><div class="card">Card 1</div></div>
+      <div class="m-deck-card-item" style="--i:1"><div class="card">Card 2</div></div>
+      <div class="m-deck-card-item" style="--i:2"><div class="card">Card 3</div></div>
+      <div class="m-deck-card-item" style="--i:3"><div class="card">Card 4</div></div>
+    </div>
+  </div>
+  <div class="spacer">End of deck</div>
+</body>
+</html>

@@ -1,0 +1,66 @@
+<!-- ============ RequestModal ============ -->
+<div class="modal" id="modal" role="dialog" aria-modal="true" aria-labelledby="mTitle" hidden>
+    <div class="modal__panel" id="mPanel">
+        <button class="x-btn" id="mClose" aria-label="Close">
+            <svg aria-hidden="true" focusable="false" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+                <path d="M4 4l16 16M20 4 4 20"/>
+            </svg>
+        </button>
+        <div id="mForm">
+            <div class="mhead">
+                <p>Hire me</p>
+                <h2 id="mTitle">Tell me what you need built.</h2>
+            </div>
+            <form class="mform" id="reqForm" name="contact" method="POST" action="/contact">
+                <input type="hidden" name="form-name" value="contact">
+                <p class="mform__hp" aria-hidden="true" style="display:none;">
+                    <label>
+                        Leave this empty <input name="company" tabindex="-1" autocomplete="off">
+                    </label>
+                </p>
+                <label for="f-name">
+                    <span>Name</span>
+                    <input id="f-name" name="name" type="text" required maxlength="80" placeholder="Your name" autocomplete="name">
+                </label>
+                <label for="f-email">
+                    <span>Email</span>
+                    <input id="f-email" name="email" type="email" required maxlength="120" placeholder="you@company.com" autocomplete="email">
+                </label>
+                <label for="f-phone">
+                    <span>Phone / Budget</span>
+                    <input id="f-phone" name="phone" type="text" maxlength="60" placeholder="+91 98765 43210 or Budget">
+                </label>
+                <label for="f-project">
+                    <span>What do you need?</span>
+                    <textarea id="f-project" name="project" rows="4" required maxlength="1500" placeholder="Describe the work you'd like done — scope, timeline and budget."></textarea>
+                </label>
+                <p id="mFormError" role="alert" hidden style="color:#b45353; margin:0; font-size:.9rem;"></p>
+                <div class="mform__bot">
+                    <small>I reply within one business day.</small>
+                    <button type="submit" class="pill pill--dark pill--arrow" id="mSend">
+                        <span class="pill__in" data-h="s 1 1.04" data-hs="320 18" data-ht=".pill">
+                            <span id="mSendLbl">Send Inquiry</span>
+                            <span class="pill__badge">
+                                <svg aria-hidden="true" focusable="false" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-h="x 0 2|y 0 -2" data-hs="320 18" data-ht=".pill">
+                                    <path d="M7 17 17 7M8 7h9v9"/>
+                                </svg>
+                            </span>
+                        </span>
+                    </button>
+                </div>
+            </form>
+        </div>
+        <div class="msuccess" id="mSuccess" role="status" aria-live="polite" hidden>
+            <div class="msuccess__badge">
+                <svg aria-hidden="true" focusable="false" viewBox="0 0 48 48" fill="currentColor">
+                    <path d="M24 2c2.2 13.8 7.9 19.6 22 22-14.1 2.4-19.8 8.2-22 22-2.2-13.8-7.9-19.6-22-22 14.1-2.4 19.8-8.2 22-22Z"/>
+                </svg>
+            </div>
+            <h2 id="mOkT">Almost there</h2>
+            <p id="mOkP">Thank you! Your message has been received. I'll get back to you shortly.</p>
+            <button class="pill pill--dark" id="mDone">
+                <span class="pill__in" data-h="s 1 1.04" data-hs="320 18" data-ht=".pill">Close</span>
+            </button>
+        </div>
+    </div>
+</div>

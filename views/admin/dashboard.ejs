@@ -1,0 +1,532 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title><%= pageTitle %></title>
+    <link rel="stylesheet" href="/css/admin.css">
+    <link rel="preload" href="/fonts/onest-latin.woff2" as="font" type="font/woff2" crossorigin>
+    <style>
+        @font-face {
+            font-family: 'Onest';
+            font-style: normal;
+            font-display: swap;
+            font-weight: 100 900;
+            src: url(/fonts/onest-latin.woff2) format('woff2');
+        }
+    </style>
+</head>
+<body>
+    <div class="admin-layout">
+        <!-- Sidebar -->
+        <aside class="admin-sidebar">
+            <div class="admin-brand">
+                Anil Sangam <span>Admin</span>
+            </div>
+            <nav class="admin-nav">
+                <a href="#overview" class="nav-link active">📊 Overview</a>
+                <a href="#projects" class="nav-link">💼 Projects (<%= projects.length %>)</a>
+                <a href="#profile" class="nav-link">👤 Profile & Hero</a>
+                <a href="#skills" class="nav-link">⚡ Skills (<%= skills.length %>)</a>
+                <a href="#timeline" class="nav-link">⏳ Experience & Edu</a>
+                <a href="#inquiries" class="nav-link">📩 Inquiries (<%= inquiries.length %>)</a>
+                <a href="#settings" class="nav-link">⚙️ Site Settings</a>
+            </nav>
+            <div class="sidebar-footer">
+                <a href="/" target="_blank" class="btn btn-secondary btn-sm" style="width: 100%; text-align: center;">
+                    ↗ View Live Site
+                </a>
+                <form action="/admin/logout" method="POST">
+                    <button type="submit" class="btn-logout" style="width: 100%;">
+                        Sign Out
+                    </button>
+                </form>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="admin-main">
+            <!-- Header -->
+            <div class="admin-header">
+                <div>
+                    <h1>Dashboard</h1>
+                    <p>Welcome back, <strong><%= adminUser || 'Admin' %></strong>. Real-time portfolio content manager.</p>
+                </div>
+                <div>
+                    <span class="badge badge-new">System Online</span>
+                </div>
+            </div>
+
+            <% if (typeof msg !== 'undefined' && msg) { %>
+                <div class="alert alert-success"><%= msg %></div>
+            <% } %>
+
+            <!-- Overview Section -->
+            <section id="overview" class="stats-grid">
+                <div class="stat-card">
+                    <h3>Web Projects</h3>
+                    <div class="val"><%= projects.filter(p => p.category === 'web').length %></div>
+                </div>
+                <div class="stat-card">
+                    <h3>App Projects</h3>
+                    <div class="val"><%= projects.filter(p => p.category === 'app').length %></div>
+                </div>
+                <div class="stat-card">
+                    <h3>Active Skills</h3>
+                    <div class="val"><%= skills.length %></div>
+                </div>
+                <div class="stat-card">
+                    <h3>Inquiries</h3>
+                    <div class="val"><%= inquiries.length %></div>
+                </div>
+            </section>
+
+            <!-- Projects Section -->
+            <section id="projects" class="card">
+                <div class="card-header">
+                    <h2 class="card-title">Manage Projects</h2>
+                    <button class="btn btn-sm" onclick="document.getElementById('newProjectForm').scrollIntoView({ behavior: 'smooth' });">
+                        + Add Project
+                    </button>
+                </div>
+
+                <div class="table-responsive">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Category</th>
+                                <th>Title</th>
+                                <th>Sub-Title / Kind</th>
+                                <th>Order</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <% if (projects && projects.length > 0) { %>
+                                <% projects.forEach(p => { %>
+                                    <tr>
+                                        <td>
+                                            <span class="badge <%= p.category === 'web' ? 'badge-web' : 'badge-app' %>">
+                                                <%= p.category.toUpperCase() %>
+                                            </span>
+                                        </td>
+                                        <td><strong><%= p.title %></strong></td>
+                                        <td style="color: var(--text-muted);"><%= p.subTitle || p.kind || '—' %></td>
+                                        <td><%= p.order %></td>
+                                        <td>
+                                            <span class="badge <%= p.isPublished ? 'badge-new' : 'badge-read' %>">
+                                                <%= p.isPublished ? 'Published' : 'Draft' %>
+                                            </span>
+                                        </td>
+                                        <td>
+                                            <details style="display:inline-block; margin-right:6px; vertical-align:top;">
+                                                <summary class="btn btn-sm">Edit</summary>
+                                                <div style="position:absolute; z-index:20; right:24px; width:min(720px,calc(100vw - 48px)); max-height:75vh; overflow:auto; padding:20px; border:1px solid #334155; border-radius:14px; background:#111827; box-shadow:0 18px 45px rgba(0,0,0,.4);">
+                                                    <h3 style="margin:0 0 14px;">Edit <%= p.title %></h3>
+                                                    <form action="/admin/projects/edit/<%= p._id %>" method="POST" enctype="multipart/form-data">
+                                                        <div class="form-grid">
+                                                            <div class="form-group"><label>Title</label><input name="title" value="<%= p.title %>" required></div>
+                                                            <div class="form-group"><label>Category</label><select name="category"><option value="web" <%= p.category === 'web' ? 'selected' : '' %>>Web Development</option><option value="app" <%= p.category === 'app' ? 'selected' : '' %>>App Development</option></select></div>
+                                                            <div class="form-group"><label>Subtitle</label><input name="subTitle" value="<%= p.subTitle || '' %>"></div>
+                                                            <div class="form-group"><label>Kind</label><input name="kind" value="<%= p.kind || '' %>"></div>
+                                                            <div class="form-group full"><label>Description</label><textarea name="desc" rows="3"><%= p.desc || '' %></textarea></div>
+                                                            <div class="form-group"><label>Tech stack (comma-separated)</label><input name="tags" value="<%= (p.tags || []).join(', ') %>"></div>
+                                                            <div class="form-group"><label>Live URL</label><input type="url" name="url" value="<%= p.url || '' %>"></div>
+                                                            <div class="form-group"><label>Display order</label><input type="number" name="order" value="<%= p.order || 0 %>"></div>
+                                                            <div class="form-group"><label>Visibility</label><select name="isPublished"><option value="true" <%= p.isPublished ? 'selected' : '' %>>Published</option><option value="false" <%= !p.isPublished ? 'selected' : '' %>>Draft</option></select></div>
+                                                            <div class="form-group"><label>Book cover image</label><% if (p.poster) { %><img src="<%= p.poster.startsWith('/') || p.poster.startsWith('http') ? p.poster : '/images/' + p.poster %>" alt="Current <%= p.title %> cover" style="display:block;width:72px;height:88px;object-fit:cover;border-radius:6px;margin-bottom:8px;"><% } %><input type="file" name="coverImage" accept="image/*"><small>Shown on the book cover. Leave empty to keep current.</small></div>
+                                                            <div class="form-group"><label>Inside book image</label><% if (p.shot || p.poster) { const pageImage = p.shot || p.poster; %><img src="<%= pageImage.startsWith('/') || pageImage.startsWith('http') ? pageImage : '/images/' + pageImage %>" alt="Current <%= p.title %> page image" style="display:block;width:72px;height:88px;object-fit:cover;border-radius:6px;margin-bottom:8px;"><% } %><input type="file" name="screenshotImage" accept="image/*"><small>Use a full-page site capture for web projects or an app screenshot for app projects.</small></div>
+                                                        </div>
+                                                        <button class="btn" type="submit" style="margin-top:14px;">Save Project</button>
+                                                    </form>
+                                                </div>
+                                            </details>
+                                            <form action="/admin/projects/delete/<%= p._id %>" method="POST" style="display:inline;" onsubmit="return confirm('Are you sure you want to delete this project?');">
+                                                <button type="submit" class="btn btn-sm btn-danger">Delete</button>
+                                            </form>
+                                        </td>
+                                    </tr>
+                                <% }) %>
+                            <% } else { %>
+                                <tr>
+                                    <td colspan="6" style="text-align: center; color: var(--text-muted);">No projects found. Add your first project below.</td>
+                                </tr>
+                            <% } %>
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Add Project Form -->
+                <div id="newProjectForm" style="margin-top: 32px; padding-top: 24px; border-top: 1px solid var(--border);">
+                    <h3 style="margin-bottom: 16px; font-size: 1.1rem;">Add New Project</h3>
+                    <form action="/admin/projects/create" method="POST" enctype="multipart/form-data">
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label for="p-title">Project Title *</label>
+                                <input type="text" id="p-title" name="title" required placeholder="e.g. Expense Tracker">
+                            </div>
+                            <div class="form-group">
+                                <label for="p-category">Category *</label>
+                                <select id="p-category" name="category" required>
+                                    <option value="web">Web Development</option>
+                                    <option value="app">App Development</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="p-sub">Sub-Headline / Tagline</label>
+                                <input type="text" id="p-sub" name="subTitle" placeholder="Personal finance, organised into books">
+                            </div>
+                            <div class="form-group">
+                                <label for="p-kind">Kind / Type</label>
+                                <input type="text" id="p-kind" name="kind" placeholder="e.g. iOS app · Finance, Website build">
+                            </div>
+                            <div class="form-group full">
+                                <label for="p-desc">Description</label>
+                                <textarea id="p-desc" name="desc" rows="3" placeholder="Explain the project features, architecture, and solution..."></textarea>
+                            </div>
+                            <div class="form-group">
+                                <label for="p-tags">Tags (comma-separated)</label>
+                                <input type="text" id="p-tags" name="tags" placeholder="Swift, Budgets, Interactive UI">
+                            </div>
+                            <div class="form-group">
+                                <label for="p-url">Live URL (optional)</label>
+                                <input type="url" id="p-url" name="url" placeholder="https://...">
+                            </div>
+                            <div class="form-group">
+                                <label for="p-order">Display Order (number)</label>
+                                <input type="number" id="p-order" name="order" value="<%= projects.length + 1 %>">
+                            </div>
+                            <div class="form-group">
+                                <label for="p-cover">Book cover image</label>
+                                <input type="file" id="p-cover" name="coverImage" accept="image/*">
+                            </div>
+                            <div class="form-group">
+                                <label for="p-page-image">Inside book image</label>
+                                <input type="file" id="p-page-image" name="screenshotImage" accept="image/*">
+                                <small>Use a full-page site capture for web projects or an app screenshot for app projects.</small>
+                            </div>
+                        </div>
+                        <button type="submit" class="btn" style="margin-top: 12px;">+ Create Project</button>
+                    </form>
+                </div>
+            </section>
+
+            <!-- Profile & Hero Section -->
+            <section id="profile" class="card">
+                <div class="card-header">
+                    <h2 class="card-title">Profile & Hero Content</h2>
+                </div>
+                <form action="/admin/profile" method="POST" enctype="multipart/form-data">
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="fullName">Full Name</label>
+                            <input type="text" id="fullName" name="fullName" value="<%= profile.fullName || 'Anil Sangam' %>" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="email">Contact Email</label>
+                            <input type="email" id="email" name="email" value="<%= profile.email || 'asangam012@gmail.com' %>" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="whatsappNumber">WhatsApp number</label>
+                            <input type="tel" id="whatsappNumber" name="whatsappNumber" value="<%= profile.whatsappNumber || '' %>" placeholder="e.g. 919876543210">
+                            <small style="color:#94a3b8;">Include country code, numbers only.</small>
+                        </div>
+                        <div class="form-group">
+                            <label for="phoneNumber">Contact phone number</label>
+                            <input type="tel" id="phoneNumber" name="phoneNumber" value="<%= profile.phoneNumber || '' %>" placeholder="e.g. +91 98765 43210">
+                        </div>
+                        <div class="form-group full">
+                            <label>Social profile links</label>
+                            <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px;">
+                                <input type="url" name="socialGithub" aria-label="GitHub URL" value="<%= (profile.socialLinks && profile.socialLinks.github) || '' %>" placeholder="GitHub URL">
+                                <input type="url" name="socialTwitter" aria-label="X or Twitter URL" value="<%= (profile.socialLinks && profile.socialLinks.twitter) || '' %>" placeholder="X / Twitter URL">
+                                <input type="url" name="socialLinkedin" aria-label="LinkedIn URL" value="<%= (profile.socialLinks && profile.socialLinks.linkedin) || '' %>" placeholder="LinkedIn URL">
+                                <input type="url" name="socialInstagram" aria-label="Instagram URL" value="<%= (profile.socialLinks && profile.socialLinks.instagram) || '' %>" placeholder="Instagram URL">
+                            </div>
+                        </div>
+                        <div class="form-group full">
+                            <label for="headline">Hero Headline</label>
+                            <input type="text" id="headline" name="headline" value="<%= (profile && profile.headline) ? profile.headline : 'Hi, I am Anil Sangam. I am a Software Developer.' %>">
+                        </div>
+                        <div class="form-group full">
+                            <label for="subheadline">Hero Subheadline / Bio Summary</label>
+                            <textarea id="subheadline" name="subheadline" rows="2"><%= profile.subheadline || 'Freelance developer building websites and iOS apps for clients worldwide. Working remotely, replies within 5 hours.' %></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label for="location">Location</label>
+                            <input type="text" id="location" name="location" value="<%= profile.location || 'India · Working Worldwide' %>">
+                        </div>
+                        <div class="form-group">
+                            <label for="availability">Availability Status</label>
+                            <input type="text" id="availability" name="availabilityStatus" value="<%= profile.availabilityStatus || 'Available for freelance projects' %>">
+                        </div>
+                        <div class="form-group full">
+                            <label for="heroSkills">Hero Flip Skills (comma-separated)</label>
+                            <input type="text" id="heroSkills" name="heroSkills" value="<%= (profile.heroSkills && profile.heroSkills.join(', ')) || 'Software Developer, Web Developer, App Developer' %>">
+                        </div>
+                        <div class="form-group full" style="padding:16px; border:1px solid #334155; border-radius:12px;">
+                            <label for="resumeUrl">Resume download button</label>
+                            <small style="color:#94a3b8; display:block; margin:4px 0 12px;">Paste a public PDF URL, or upload a PDF below. A newly uploaded PDF replaces the URL.</small>
+                            <input type="text" id="resumeUrl" name="resumeUrl" value="<%= profile.resumeUrl || '' %>" placeholder="https://example.com/resume.pdf">
+                            <label for="resume" style="display:block; margin-top:12px;">Upload resume PDF</label>
+                            <input type="file" id="resume" name="resume" accept="application/pdf,.pdf">
+                            <% if (profile.resumeUrl) { %><small style="color:#94a3b8; display:block; margin-top:8px;">Current: <a href="<%= profile.resumeUrl %>" target="_blank" rel="noopener">Open resume</a></small><% } %>
+                        </div>
+                        <div class="form-group full">
+                            <label>Hero Portrait Images</label>
+                            <small style="color:#94a3b8; display:block; margin-bottom:12px;">Upload matching black-and-white and colour portraits. The colour version is revealed when visitors hover over the portrait.</small>
+                            <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(250px,1fr)); gap:16px;">
+                                <div style="display:flex; align-items:center; gap:14px; padding:14px; border:1px solid #334155; border-radius:12px;">
+                                    <div style="width:72px; height:88px; flex:none; border-radius:10px; overflow:hidden; border:1px solid #334155; background:#0f172a; display:flex; align-items:center; justify-content:center;">
+                                        <img src="<%= profile.heroImage || '/uploads/anil_sangam.png' %>" alt="Black-and-white portrait preview" style="width:100%; height:100%; object-fit:contain; filter:grayscale(1);" id="heroImgPreview">
+                                    </div>
+                                    <div style="flex:1; min-width:0;">
+                                        <label for="heroImage">Black-and-white image</label>
+                                        <input type="file" id="heroImage" name="heroImage" accept="image/*" onchange="if(this.files[0]){const r=new FileReader();r.onload=e=>document.getElementById('heroImgPreview').src=e.target.result;r.readAsDataURL(this.files[0]);}">
+                                    </div>
+                                </div>
+                                <div style="display:flex; align-items:center; gap:14px; padding:14px; border:1px solid #334155; border-radius:12px;">
+                                    <div style="width:72px; height:88px; flex:none; border-radius:10px; overflow:hidden; border:1px solid #334155; background:#0f172a; display:flex; align-items:center; justify-content:center;">
+                                        <img src="<%= profile.heroImageColor || '/uploads/anil_sangam_colour.png' %>" alt="Colour portrait preview" style="width:100%; height:100%; object-fit:contain;" id="heroColorImgPreview">
+                                    </div>
+                                    <div style="flex:1; min-width:0;">
+                                        <label for="heroImageColor">Colour image</label>
+                                        <input type="file" id="heroImageColor" name="heroImageColor" accept="image/*" onchange="if(this.files[0]){const r=new FileReader();r.onload=e=>document.getElementById('heroColorImgPreview').src=e.target.result;r.readAsDataURL(this.files[0]);}">
+                                    </div>
+                                </div>
+                            </div>
+                            <small style="color:#94a3b8; display:block; margin-top:8px;">PNG, JPG, or WEBP. Leave an input empty to keep its current image.</small>
+                        </div>
+                    </div>
+                    <button type="submit" class="btn" style="margin-top: 12px;">Save Profile Changes</button>
+                </form>
+            </section>
+
+            <!-- Skills Section -->
+            <section id="skills" class="card">
+                <div class="card-header">
+                    <h2 class="card-title">Skills & Technologies</h2>
+                </div>
+                <div class="table-responsive">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Skill Name</th>
+                                <th>Category</th>
+                                <th>Proficiency</th>
+                                <th>Order</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <% if (skills && skills.length > 0) { %>
+                                <% skills.forEach(s => { %>
+                                    <tr>
+                                        <td><strong><%= s.name %></strong></td>
+                                        <td><%= s.category %></td>
+                                        <td><%= s.proficiency %>%</td>
+                                        <td><%= s.order %></td>
+                                        <td>
+                                            <form action="/admin/skills/delete/<%= s._id %>" method="POST" style="display:inline;" onsubmit="return confirm('Delete this skill?');">
+                                                <button type="submit" class="btn btn-sm btn-danger">Delete</button>
+                                            </form>
+                                        </td>
+                                    </tr>
+                                <% }) %>
+                            <% } else { %>
+                                <tr>
+                                    <td colspan="5" style="text-align:center; color: var(--text-muted);">No skills listed.</td>
+                                </tr>
+                            <% } %>
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Add Skill Form -->
+                <div style="margin-top: 24px; padding-top: 20px; border-top: 1px solid var(--border);">
+                    <h3 style="margin-bottom: 14px; font-size: 1rem;">Add Skill</h3>
+                    <form action="/admin/skills/create" method="POST">
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label for="sk-name">Skill Name</label>
+                                <input type="text" id="sk-name" name="name" required placeholder="e.g. TypeScript">
+                            </div>
+                            <div class="form-group">
+                                <label for="sk-cat">Category</label>
+                                <select id="sk-cat" name="category">
+                                    <option value="Web Development">Web Development</option>
+                                    <option value="App Development">App Development</option>
+                                    <option value="Backend & Database">Backend & Database</option>
+                                    <option value="Tools & Workflow">Tools & Workflow</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="sk-prof">Proficiency (0-100)</label>
+                                <input type="number" id="sk-prof" name="proficiency" min="0" max="100" value="85">
+                            </div>
+                            <div class="form-group">
+                                <label for="sk-ord">Order</label>
+                                <input type="number" id="sk-ord" name="order" value="<%= skills.length + 1 %>">
+                            </div>
+                        </div>
+                        <button type="submit" class="btn btn-sm">+ Add Skill</button>
+                    </form>
+                </div>
+            </section>
+
+            <!-- Experience & Education Section -->
+            <section id="timeline" class="card">
+                <div class="card-header">
+                    <h2 class="card-title">Experience & Timeline Chapters</h2>
+                </div>
+                <div class="table-responsive">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Role</th>
+                                <th>Company</th>
+                                <th>Year / Period</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <% if (experience && experience.length > 0) { %>
+                                <% experience.forEach(e => { %>
+                                    <tr>
+                                        <td><strong><%= e.role %></strong></td>
+                                        <td><%= e.company %></td>
+                                        <td><%= e.period || e.year %></td>
+                                        <td>
+                                            <form action="/admin/experience/delete/<%= e._id %>" method="POST" style="display:inline;" onsubmit="return confirm('Delete this experience entry?');">
+                                                <button type="submit" class="btn btn-sm btn-danger">Delete</button>
+                                            </form>
+                                        </td>
+                                    </tr>
+                                <% }) %>
+                            <% } else { %>
+                                <tr>
+                                    <td colspan="4" style="text-align: center; color: var(--text-muted);">No experience entries.</td>
+                                </tr>
+                            <% } %>
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Add Experience Form -->
+                <div style="margin-top: 24px; padding-top: 20px; border-top: 1px solid var(--border);">
+                    <h3 style="margin-bottom: 14px; font-size: 1rem;">Add Experience Entry</h3>
+                    <form action="/admin/experience/create" method="POST">
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label for="ex-role">Role Title</label>
+                                <input type="text" id="ex-role" name="role" required placeholder="e.g. Lead Developer">
+                            </div>
+                            <div class="form-group">
+                                <label for="ex-comp">Company / Organization</label>
+                                <input type="text" id="ex-comp" name="company" placeholder="e.g. Tech Studio">
+                            </div>
+                            <div class="form-group">
+                                <label for="ex-year">Year (e.g. 2024)</label>
+                                <input type="text" id="ex-year" name="year" placeholder="2024">
+                            </div>
+                            <div class="form-group">
+                                <label for="ex-period">Period Text</label>
+                                <input type="text" id="ex-period" name="period" placeholder="2024 — Present">
+                            </div>
+                            <div class="form-group full">
+                                <label for="ex-desc">Description</label>
+                                <textarea id="ex-desc" name="description" rows="2" placeholder="Summary of work and impact..."></textarea>
+                            </div>
+                            <div class="form-group full">
+                                <label for="ex-high">Highlights (one per line)</label>
+                                <textarea id="ex-high" name="highlights" rows="3" placeholder="Shipped native app to 10k users&#10;Reduced load time by 45%"></textarea>
+                            </div>
+                        </div>
+                        <button type="submit" class="btn btn-sm">+ Add Experience</button>
+                    </form>
+                </div>
+            </section>
+
+            <!-- Inquiries Section -->
+            <section id="inquiries" class="card">
+                <div class="card-header">
+                    <h2 class="card-title">Client Inquiries & Messages</h2>
+                </div>
+                <div class="table-responsive">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Name</th>
+                                <th>Email</th>
+                                <th>Budget / Info</th>
+                                <th>Message</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <% if (inquiries && inquiries.length > 0) { %>
+                                <% inquiries.forEach(inq => { %>
+                                    <tr>
+                                        <td style="white-space: nowrap; font-size: 0.85rem; color: var(--text-muted);">
+                                            <%= new Date(inq.createdAt).toLocaleDateString() %>
+                                        </td>
+                                        <td><strong><%= inq.name %></strong></td>
+                                        <td><a href="mailto:<%= inq.email %>"><%= inq.email %></a></td>
+                                        <td><%= inq.budget || '—' %></td>
+                                        <td style="max-width: 320px; font-size: 0.9rem;"><%= inq.message %></td>
+                                        <td>
+                                            <form action="/admin/inquiries/delete/<%= inq._id %>" method="POST" style="display:inline;" onsubmit="return confirm('Delete this inquiry?');">
+                                                <button type="submit" class="btn btn-sm btn-danger">Delete</button>
+                                            </form>
+                                        </td>
+                                    </tr>
+                                <% }) %>
+                            <% } else { %>
+                                <tr>
+                                    <td colspan="6" style="text-align: center; color: var(--text-muted); padding: 32px;">
+                                        No inquiries received yet. They will appear here when prospective clients submit the hire form.
+                                    </td>
+                                </tr>
+                            <% } %>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- Site Settings Section -->
+            <section id="settings" class="card">
+                <div class="card-header">
+                    <h2 class="card-title">Website Settings</h2>
+                </div>
+                <form action="/admin/settings" method="POST">
+                    <div class="form-grid">
+                        <div class="form-group full">
+                            <label for="siteTitle">Site Title (Browser Tab)</label>
+                            <input type="text" id="siteTitle" name="siteTitle" value="<%= settings.siteTitle || 'Anil Sangam — Freelance Web & App Developer' %>">
+                        </div>
+                        <div class="form-group full">
+                            <label for="metaDesc">Meta Description (SEO)</label>
+                            <textarea id="metaDesc" name="metaDescription" rows="2"><%= settings.metaDescription || 'Freelance developer building websites and iOS apps for clients worldwide. Working remotely, replies within 5 hours.' %></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label for="contactEmail">Public Contact Email</label>
+                            <input type="email" id="contactEmail" name="contactEmail" value="<%= settings.contactEmail || 'asangam012@gmail.com' %>">
+                        </div>
+                        <div class="form-group">
+                            <label for="defaultTheme">Default Theme</label>
+                            <select id="defaultTheme" name="defaultTheme">
+                                <option value="system" <%= settings.defaultTheme === 'system' ? 'selected' : '' %>>System Default</option>
+                                <option value="dark" <%= settings.defaultTheme === 'dark' ? 'selected' : '' %>>Dark Mode</option>
+                                <option value="light" <%= settings.defaultTheme === 'light' ? 'selected' : '' %>>Light Mode</option>
+                            </select>
+                        </div>
+                    </div>
+                    <button type="submit" class="btn" style="margin-top: 12px;">Save Settings</button>
+                </form>
+            </section>
+        </main>
+    </div>
+</body>
+</html>
