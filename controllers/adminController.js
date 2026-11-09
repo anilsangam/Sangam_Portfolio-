@@ -45,14 +45,18 @@ exports.postLogin = async (req, res) => {
       return res.redirect('/admin/login');
     }
 
-    // Login successful
-    req.session.adminId = admin._id;
-    req.session.adminUser = admin.username;
     admin.lastLogin = new Date();
     await admin.save();
 
-    const redirectTo = req.session.returnTo || '/admin/dashboard';
-    delete req.session.returnTo;
+    // Rotate the session identifier after authenticating to prevent session
+    // fixation. Persist auth fields only after regeneration succeeds.
+    await new Promise((resolve, reject) => {
+      req.session.regenerate((err) => err ? reject(err) : resolve());
+    });
+    req.session.adminId = admin._id;
+    req.session.adminUser = admin.username;
+
+    const redirectTo = '/admin/dashboard';
     return res.redirect(redirectTo);
   } catch (err) {
     console.error('Admin Login Error:', err);

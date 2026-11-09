@@ -38,6 +38,10 @@ async function uploadToCloudinaryIfAvailable(file, folder = 'portfolio') {
   }
 
   if (!isCloudinaryConfigured) {
+    if (process.env.NODE_ENV === 'production') {
+      throw new Error('Cloudinary must be configured in production to store uploaded files.');
+    }
+
     console.warn('[Cloudinary] Keys missing. Falling back to local storage.');
     // Fallback: save to disk only if Cloudinary is not configured
     const uploadDir = path.join(__dirname, '../public/images');
@@ -86,7 +90,7 @@ async function uploadToCloudinaryIfAvailable(file, folder = 'portfolio') {
     return null;
   } catch (err) {
     console.error('[Cloudinary Upload Error]:', (err && err.error && err.error.message) || (err && err.message) || err);
-    return null;
+    throw new Error('Cloudinary upload failed. Please try again.');
   }
 }
 

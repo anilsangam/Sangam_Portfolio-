@@ -7,6 +7,10 @@ const isCloudinaryConfigured = Boolean(
   process.env.CLOUDINARY_API_SECRET
 );
 
+if (process.env.NODE_ENV === 'production' && !isCloudinaryConfigured) {
+  console.error('[Cloudinary] Production uploads are disabled: Cloudinary credentials are not configured.');
+}
+
 if (isCloudinaryConfigured) {
   cloudinary.config({
     cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
