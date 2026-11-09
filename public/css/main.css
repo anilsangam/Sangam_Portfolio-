@@ -685,6 +685,12 @@
                 }
             }
 
+            @media (min-width: 1024px) {
+                .hero {
+                    min-height: calc(100svh - 4rem)
+                }
+            }
+
             .hero::before {
                 content: "";
                 position: absolute;
@@ -726,6 +732,12 @@
                 transform: translate(-50%,2.5rem)
             }
 
+            @media (max-width: 767.98px) {
+                .fig {
+                    bottom: calc(var(--bar-h) - 12px)
+                }
+            }
+
             body.ready .fig {
                 opacity: 1;
                 transform: translate(-50%,0)
@@ -733,7 +745,8 @@
 
             @media (min-width: 1024px) {
                 .fig {
-                    height:min(calc(100% - var(--bar-h) - 6rem),58rem,calc((min(100vw,var(--container-shell)) - 2 * var(--gut-lg)) * .44 * 1033 / 801));
+                    height:min(calc(100% - var(--bar-h) - 5rem),60rem,calc((min(100vw,var(--container-shell)) - 2 * var(--gut-lg)) * .46 * 1033 / 801));
+                    bottom: var(--bar-h);
                     left: auto;
                     right: calc(max(0px,(100% - var(--container-shell)) / 2) + var(--gut-lg));
                     transform: translateY(2.5rem)
@@ -1168,15 +1181,21 @@
                 padding-bottom: calc(var(--fig-h) + 1.25rem)
             }
 
+            @media (max-width: 767.98px) {
+                .hero__content {
+                    padding-bottom: calc(var(--fig-h) - 3rem)
+                }
+            }
+
             @media (min-width: 1024px) {
                 .hero__content {
                     display:grid;
-                    min-height: calc(100lvh - var(--bar-h));
+                    min-height: calc(100lvh - var(--bar-h) - 4rem);
                     grid-template-columns: repeat(12,1fr);
                     align-content: center;
                     gap: 2.5rem;
                     padding-top: 7rem;
-                    padding-bottom: 4rem
+                    padding-bottom: 2rem
                 }
             }
 
