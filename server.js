@@ -70,15 +70,17 @@ app.use((err, req, res, next) => {
 
 // Server Initialization
 async function startServer() {
-  try {
-    const conn = await connectDB();
-    if (!conn && NODE_ENV === 'production') {
-      console.error('\n[Database Error] Could not establish connection to MongoDB in production.');
-      console.error('Please verify your MONGODB_URI in .env and network connection.\n');
-      return;
-    }
+  // Start listening before waiting for MongoDB so a slow or unavailable
+  // database cannot prevent the server from starting.
+  const dbConnection = connectDB().catch((err) => {
+    console.error('\n[Database Error] Could not establish connection to MongoDB.');
+    console.error('Please verify your MONGODB_URI and network connection.');
+    console.error(err.message);
+    return null;
+  });
 
-    app.listen(PORT, '0.0.0.0', () => {
+  app.listen(PORT, '0.0.0.0', async () => {
+      const conn = await dbConnection;
       const displayBase = NODE_ENV === 'production' && process.env.BASE_URL ? process.env.BASE_URL : `http://localhost:${PORT}`;
 
       console.log(`
@@ -104,9 +106,6 @@ ${conn ? 'MongoDB Connected Successfully' : 'Running with default portfolio seed
 ========================================
 `);
     });
-  } catch (err) {
-    console.error('\n[Server Startup Failure] Failed to start server:', err.message);
-  }
 }
 
 if (require.main === module) {
